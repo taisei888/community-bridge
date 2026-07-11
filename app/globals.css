@@ -3,7 +3,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: #F4F5F7;
+  background: #ECEEF1;
   color: #1a1a1a;
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -11,24 +11,11 @@ body {
   min-height: 100vh;
 }
 
-a { text-decoration: none; color: inherit; }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
 }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp 0.4s ease-out; }

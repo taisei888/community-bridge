@@ -2,28 +2,57 @@ import KaihoGenerator from "./components/KaihoGenerator";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main style={{ minHeight: "100vh" }}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              会報<span className="text-blue-600">AI</span>
-            </h1>
-            <p className="text-sm text-gray-400 mt-0.5">老人クラブ会報 自動作成ツール</p>
+      <header style={{
+        background: "#fff",
+        borderBottom: "1px solid #E2E4E9",
+        padding: "0 24px",
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+      }}>
+        <div style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: "60px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{
+              width: "32px", height: "32px", borderRadius: "8px",
+              background: "linear-gradient(135deg, #2563EB, #7C3AED)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#fff", fontWeight: 800, fontSize: "14px",
+            }}>K</div>
+            <span style={{ fontSize: "18px", fontWeight: 700, color: "#111" }}>
+              会報AI
+            </span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
-            <span className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</span>情報入力</span>
-            <span className="text-gray-200">―</span>
-            <span className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</span>AI生成</span>
-            <span className="text-gray-200">―</span>
-            <span className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</span>ダウンロード</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            {["入力", "生成", "保存"].map((label, i) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{
+                  width: "24px", height: "24px", borderRadius: "50%",
+                  background: i === 0 ? "#2563EB" : "#E2E4E9",
+                  color: i === 0 ? "#fff" : "#9CA3AF",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "12px", fontWeight: 600,
+                }}>{i + 1}</div>
+                <span style={{
+                  fontSize: "13px", fontWeight: 500,
+                  color: i === 0 ? "#111" : "#9CA3AF",
+                }}>{label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </header>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px" }}>
         <KaihoGenerator />
       </div>
     </main>
