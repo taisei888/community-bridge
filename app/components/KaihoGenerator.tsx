@@ -115,13 +115,16 @@ export default function KaihoGenerator() {
       const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "生成失敗"); }
       const data = await res.json();
-      // Normalize notices.items: API may return {body:string}[] instead of string[]
-      if (data.sections?.notices?.items) {
-        data.sections.notices.items = data.sections.notices.items.map(
-          (item: string | { body?: string; text?: string }) =>
-            typeof item === "string" ? item : (item.body || item.text || JSON.stringify(item))
-        );
-      }
+      // Defensive: ensure sections and all sub-objects exist
+      const sec = data.sections || {};
+      data.sections = {
+        activityReport: { title: sec.activityReport?.title || "今月の活動報告", items: Array.isArray(sec.activityReport?.items) ? sec.activityReport.items : [] },
+        nextSchedule: { title: sec.nextSchedule?.title || "来月の予定", items: Array.isArray(sec.nextSchedule?.items) ? sec.nextSchedule.items : [] },
+        notices: { title: sec.notices?.title || "お知らせ", items: Array.isArray(sec.notices?.items) ? sec.notices.items.map((item: unknown) => typeof item === "string" ? item : (item as Record<string, string>)?.body || (item as Record<string, string>)?.text || String(item)) : [] },
+        memberVoices: { title: sec.memberVoices?.title || "会員のひとこと", items: Array.isArray(sec.memberVoices?.items) ? sec.memberVoices.items : [] },
+        editorNote: { title: sec.editorNote?.title || "編集後記", body: sec.editorNote?.body || "" },
+        editor: { title: sec.editor?.title || "編集責任者", name: sec.editor?.name || "" },
+      };
       setKaiho(data);
     } catch (err) { setError(err instanceof Error ? err.message : "エラー"); }
     finally { setLoading(false); }

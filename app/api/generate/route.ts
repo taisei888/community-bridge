@@ -138,6 +138,25 @@ JSON形式：
     const text = completion.choices[0]?.message?.content ?? "";
 
     const kaihoData = JSON.parse(text);
+
+    // Normalize: ensure notices.items is string[]
+    if (kaihoData.sections?.notices?.items) {
+      kaihoData.sections.notices.items = kaihoData.sections.notices.items.map(
+        (item: unknown) => typeof item === "string" ? item : (item as Record<string, string>).body || (item as Record<string, string>).text || JSON.stringify(item)
+      );
+    }
+
+    // Normalize: ensure all required nested objects exist
+    const sec = kaihoData.sections || {};
+    kaihoData.sections = {
+      activityReport: sec.activityReport || { title: "今月の活動報告", items: [] },
+      nextSchedule: sec.nextSchedule || { title: "来月の予定", items: [] },
+      notices: sec.notices || { title: "お知らせ・連絡事項", items: [] },
+      memberVoices: sec.memberVoices || { title: "会員のひとこと", items: [] },
+      editorNote: sec.editorNote || { title: "編集後記", body: "" },
+      editor: sec.editor || { title: "編集責任者", name: editorName || "老人クラブ役員一同" },
+    };
+
     return Response.json(kaihoData);
   } catch (error) {
     const message =
