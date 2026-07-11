@@ -114,7 +114,15 @@ export default function KaihoGenerator() {
     try {
       const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "生成失敗"); }
-      setKaiho(await res.json());
+      const data = await res.json();
+      // Normalize notices.items: API may return {body:string}[] instead of string[]
+      if (data.sections?.notices?.items) {
+        data.sections.notices.items = data.sections.notices.items.map(
+          (item: string | { body?: string; text?: string }) =>
+            typeof item === "string" ? item : (item.body || item.text || JSON.stringify(item))
+        );
+      }
+      setKaiho(data);
     } catch (err) { setError(err instanceof Error ? err.message : "エラー"); }
     finally { setLoading(false); }
   };
