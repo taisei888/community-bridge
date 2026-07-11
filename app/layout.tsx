@@ -1,16 +1,9 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "つながり",
-  description: "老人クラブの連絡・安否確認をかんたんに",
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  title: "会報AI - 老人クラブ会報かんたん作成",
+  description: "必要な情報を入力するだけで、A4会報を自動生成。PPTX・PDFでダウンロード。",
 };
 
 export default function RootLayout({
