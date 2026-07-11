@@ -131,18 +131,13 @@ JSON形式：
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 2500,
+      response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
     });
 
     const text = completion.choices[0]?.message?.content ?? "";
 
-    // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return Response.json({ error: "生成に失敗しました" }, { status: 500 });
-    }
-
-    const kaihoData = JSON.parse(jsonMatch[0]);
+    const kaihoData = JSON.parse(text);
     return Response.json(kaihoData);
   } catch (error) {
     const message =
