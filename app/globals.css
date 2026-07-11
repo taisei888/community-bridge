@@ -3,9 +3,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 50%, #fef9ef 100%);
+  background: #F4F5F7;
   color: #1a1a1a;
-  font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
   min-height: 100vh;
@@ -13,7 +13,6 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
-/* Loading spinner */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -28,11 +27,8 @@ a { text-decoration: none; color: inherit; }
   vertical-align: middle;
 }
 
-/* Pulse animation for empty state */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.float-anim {
-  animation: float 3s ease-in-out infinite;
-}
+.fade-up { animation: fadeUp 0.4s ease-out; }
