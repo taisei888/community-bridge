@@ -39,15 +39,47 @@ const inputStyle: CSSProperties = {
   transition: "border-color 0.15s, box-shadow 0.15s",
 };
 
+const focusIn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  e.target.style.borderColor = "#2563EB";
+  e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)";
+  e.target.style.background = "#fff";
+};
+const focusOut = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  e.target.style.borderColor = "#D5D7DC";
+  e.target.style.boxShadow = "none";
+  e.target.style.background = "#FAFBFC";
+};
+
 export default function KaihoGenerator() {
   const [form, setForm] = useState(INITIAL_FORM);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [kaiho, setKaiho] = useState<KaihoData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const previewRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const set = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handlePhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const newPhotos = [...photos];
+    Array.from(files).forEach((file) => {
+      if (newPhotos.length >= 4) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        newPhotos.push(reader.result as string);
+        setPhotos([...newPhotos]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(photos.filter((_, i) => i !== index));
+  };
 
   const generate = async () => {
     if (!form.clubName || !form.issueDate) { setError("クラブ名と発行号は必須です"); return; }
@@ -70,7 +102,22 @@ export default function KaihoGenerator() {
     slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 7.5, h: 1.6, fill: { color: "111827" } });
     slide.addText(kaiho.title, { x: 0.5, y: 0.2, w: 6.5, h: 0.7, fontSize: 28, bold: true, color: "FFFFFF", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
     slide.addText(kaiho.subtitle, { x: 0.5, y: 0.9, w: 6.5, h: 0.45, fontSize: 12, color: "9CA3AF", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
+
     let y = 1.85;
+
+    // Photos in PPTX
+    if (photos.length > 0) {
+      const photoW = photos.length <= 2 ? 3.0 : 2.1;
+      const photoH = photoW * 0.65;
+      const totalW = photoW * photos.length + 0.15 * (photos.length - 1);
+      let px = (7.5 - totalW) / 2;
+      photos.forEach((p) => {
+        slide.addImage({ data: p, x: px, y, w: photoW, h: photoH, rounding: true });
+        px += photoW + 0.15;
+      });
+      y += photoH + 0.25;
+    }
+
     kaiho.sections.forEach((s) => {
       if (y > 9.3) return;
       slide.addShape(pptx.ShapeType.rect, { x: 0.5, y, w: 0.1, h: 0.3, fill: { color: "2563EB" } });
@@ -109,22 +156,58 @@ export default function KaihoGenerator() {
                 {f.required && <span style={{ color: "#2563EB", marginLeft: "4px" }}>*</span>}
               </label>
               {f.multi ? (
-                <textarea
-                  name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder} rows={2}
-                  style={{ ...inputStyle, resize: "none" }}
-                  onFocus={e => { e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; e.target.style.background = "#fff"; }}
-                  onBlur={e => { e.target.style.borderColor = "#D5D7DC"; e.target.style.boxShadow = "none"; e.target.style.background = "#FAFBFC"; }}
-                />
+                <textarea name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder} rows={2}
+                  style={{ ...inputStyle, resize: "none" }} onFocus={focusIn} onBlur={focusOut} />
               ) : (
-                <input
-                  type="text" name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder}
-                  style={inputStyle}
-                  onFocus={e => { e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; e.target.style.background = "#fff"; }}
-                  onBlur={e => { e.target.style.borderColor = "#D5D7DC"; e.target.style.boxShadow = "none"; e.target.style.background = "#FAFBFC"; }}
-                />
+                <input type="text" name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder}
+                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
               )}
             </div>
           ))}
+
+          {/* Photo Upload */}
+          <div>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>
+              写真（最大4枚）
+            </label>
+            <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhotos}
+              style={{ display: "none" }} />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              style={{
+                width: "100%", padding: "12px", border: "2px dashed #D5D7DC", borderRadius: "10px",
+                background: "#FAFBFC", color: "#888", fontSize: "14px", cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#2563EB"; e.currentTarget.style.color = "#2563EB"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#D5D7DC"; e.currentTarget.style.color = "#888"; }}
+            >
+              + 写真を追加
+            </button>
+            {photos.length > 0 && (
+              <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
+                {photos.map((p, i) => (
+                  <div key={i} style={{ position: "relative", width: "76px", height: "76px" }}>
+                    <img src={p} alt="" style={{
+                      width: "76px", height: "76px", objectFit: "cover",
+                      borderRadius: "8px", border: "1px solid #E2E4E9",
+                    }} />
+                    <button
+                      onClick={() => removePhoto(i)}
+                      style={{
+                        position: "absolute", top: "-6px", right: "-6px",
+                        width: "20px", height: "20px", borderRadius: "50%",
+                        background: "#EF4444", color: "#fff", border: "2px solid #fff",
+                        fontSize: "11px", cursor: "pointer", display: "flex",
+                        alignItems: "center", justifyContent: "center", lineHeight: 1,
+                      }}
+                    >x</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div style={{ padding: "0 24px 24px" }}>
           {error && (
@@ -138,13 +221,12 @@ export default function KaihoGenerator() {
               width: "100%", padding: "12px", border: "none", borderRadius: "10px",
               background: loading ? "#93C5FD" : "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
               color: "#fff", fontSize: "15px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-              boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
-              transition: "all 0.15s",
+              boxShadow: "0 2px 8px rgba(37,99,235,0.25)", transition: "all 0.15s",
             }}
           >
             {loading ? (
               <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-                <span className="spinner" style={{
+                <span style={{
                   width: "18px", height: "18px", border: "2.5px solid rgba(255,255,255,0.3)",
                   borderTopColor: "#fff", borderRadius: "50%",
                   animation: "spin 0.6s linear infinite", display: "inline-block",
@@ -169,7 +251,6 @@ export default function KaihoGenerator() {
                   flex: 1, padding: "10px", border: "1px solid #D5D7DC", borderRadius: "10px",
                   background: "#fff", color: "#333", fontSize: "14px", fontWeight: 600,
                   cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                  transition: "all 0.15s",
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
@@ -200,8 +281,26 @@ export default function KaihoGenerator() {
                   </p>
                 </div>
 
+                {/* Photos */}
+                {photos.length > 0 && (
+                  <div style={{
+                    padding: "24px 44px 0",
+                    display: "grid",
+                    gridTemplateColumns: photos.length === 1 ? "1fr" : photos.length === 2 ? "1fr 1fr" : photos.length === 3 ? "1fr 1fr 1fr" : "1fr 1fr",
+                    gap: "12px",
+                  }}>
+                    {photos.map((p, i) => (
+                      <img key={i} src={p} alt="" style={{
+                        width: "100%", height: photos.length <= 2 ? "180px" : "140px",
+                        objectFit: "cover", borderRadius: "10px",
+                        border: "1px solid #E2E4E9",
+                      }} />
+                    ))}
+                  </div>
+                )}
+
                 {/* Content */}
-                <div style={{ padding: "32px 44px 80px" }}>
+                <div style={{ padding: `${photos.length > 0 ? 20 : 32}px 44px 80px` }}>
                   <div style={{
                     display: "grid",
                     gridTemplateColumns: kaiho.sections.length >= 4 ? "1fr 1fr" : "1fr",
@@ -242,21 +341,14 @@ export default function KaihoGenerator() {
             </div>
           </div>
         ) : (
-          <div style={{
-            ...card,
-            padding: "80px 40px",
-            textAlign: "center",
-          }}>
+          <div style={{ ...card, padding: "80px 40px", textAlign: "center" }}>
             <div style={{
               width: "56px", height: "56px", borderRadius: "14px", background: "#F0F1F3",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 20px",
+              display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px",
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
               </svg>
             </div>
             <p style={{ fontSize: "16px", fontWeight: 600, color: "#555", marginBottom: "4px" }}>プレビュー</p>
