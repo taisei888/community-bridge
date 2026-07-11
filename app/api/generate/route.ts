@@ -68,9 +68,11 @@ export async function POST(request: Request) {
     const kaihoData = JSON.parse(jsonMatch[0]);
     return Response.json(kaihoData);
   } catch (error) {
-    console.error("AI generation error:", error);
+    const message =
+      error instanceof Error ? error.message : "不明なエラー";
+    console.error("AI generation error:", message);
     return Response.json(
-      { error: "AI生成中にエラーが発生しました" },
+      { error: `AI生成エラー: ${message}` },
       { status: 500 }
     );
   }
