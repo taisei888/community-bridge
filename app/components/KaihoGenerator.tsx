@@ -24,7 +24,14 @@ const INITIAL_FORM = {
   editorName: "",
 };
 
-const FORM_FIELDS = [
+const FORM_FIELDS: {
+  key: keyof typeof INITIAL_FORM;
+  label: string;
+  type: "input" | "textarea";
+  placeholder: string;
+  required?: boolean;
+  icon: string;
+}[] = [
   {
     key: "clubName",
     label: "クラブ名",
@@ -77,7 +84,7 @@ const FORM_FIELDS = [
     placeholder: "例：田中太郎",
     icon: "✏️",
   },
-] as const;
+];
 
 export default function KaihoGenerator() {
   const [form, setForm] = useState(INITIAL_FORM);
