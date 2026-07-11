@@ -2,22 +2,37 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #F5F5F0;
-  --card: #FFFFFF;
-  --text: #1a1a1a;
-  --text-sub: #555555;
-  --accent: #2563EB;
-  --accent-light: #DBEAFE;
-  --border: #E5E7EB;
-}
-
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 50%, #fef9ef 100%);
+  color: #1a1a1a;
   font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 a { text-decoration: none; color: inherit; }
+
+/* Loading spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Pulse animation for empty state */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float-anim {
+  animation: float 3s ease-in-out infinite;
+}
