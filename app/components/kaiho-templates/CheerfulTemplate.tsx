@@ -60,7 +60,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
       </div>
 
       {/* Activity cards with large images */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <div style={{ fontSize: "14px", fontWeight: 800, color: c("--c-main"), display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "4px", height: "16px", background: c("--c-main"), borderRadius: "2px" }} />
           {sec.activityReport.title}
@@ -72,7 +72,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
             boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           }}>
             <PhotoOrPlaceholder photo={photos[i + 1]} index={i + 1} style={{ width: "140px", flexShrink: 0 }} />
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main"), marginBottom: "3px" }}>{item.date}</div>
               <div style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>{item.headline}</div>
               <p style={{ fontSize: "11px", lineHeight: 1.7, color: c("--c-text"), margin: 0, opacity: 0.8 }}>{item.body}</p>
@@ -111,7 +111,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
       {sec.memberVoices.items.length > 0 && (
         <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
           {sec.memberVoices.items.map((v, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", background: "#fff", borderRadius: "10px", padding: "8px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fff", borderRadius: "10px", padding: "8px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
               <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: c("--c-accent"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <span style={{ color: "#fff", fontSize: "13px", fontWeight: 700 }}>{v.name.charAt(0)}</span>
               </div>
@@ -239,7 +239,7 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
       </div>
 
       {/* Collage area: scattered cards */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "auto auto auto", gap: "8px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "auto auto auto", gap: "8px" }}>
         {/* Activity cards like scattered photos */}
         {sec.activityReport.items.map((item, i) => (
           <div key={i} style={{
@@ -247,7 +247,7 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
             boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
             transform: `rotate(${i % 2 === 0 ? "-1" : "1"}deg)`,
           }}>
-            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "80px", marginBottom: "6px" }} />
+            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "120px", marginBottom: "6px" }} />
             <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
             <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
             <p style={{ fontSize: "10px", lineHeight: 1.5, color: c("--c-text"), margin: "3px 0 0", opacity: 0.8 }}>{item.body}</p>
@@ -288,7 +288,7 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
         <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {sec.memberVoices.items.map((v, i) => (
             <div key={i} style={{
-              flex: 1, minWidth: "100px",
+              minWidth: "100px",
               background: "#fff", borderRadius: "12px", padding: "8px 10px",
               boxShadow: "0 1px 4px rgba(0,0,0,0.05)", position: "relative",
             }}>

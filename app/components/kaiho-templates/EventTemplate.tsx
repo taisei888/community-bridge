@@ -76,12 +76,12 @@ function EventVariant1({ data, photos }: TemplateProps) {
       </div>
 
       {/* Activity report - compact */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", minHeight: 0 }}>
         <div>
           <h3 style={{ fontSize: "12px", fontWeight: 700, color: c("--c-sub"), margin: "0 0 6px" }}>{sec.activityReport.title}</h3>
           {sec.activityReport.items.map((item, i) => (
             <div key={i} style={{ marginBottom: "8px" }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "70px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "110px", marginBottom: "4px" }} />
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-text") }}>{item.date} {item.headline}</div>
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: "2px 0 0", opacity: 0.8 }}>{item.body}</p>
             </div>
@@ -177,7 +177,7 @@ function EventVariant2({ data, photos }: TemplateProps) {
         <div style={{ display: "flex", gap: "10px", overflow: "hidden" }}>
           {sec.activityReport.items.map((item, i) => (
             <div key={i} style={{ flex: 1, background: "#fff", borderRadius: "10px", padding: "8px", border: `1px solid color-mix(in srgb, ${c("--c-sub")} 15%, white)` }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "60px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "100px", marginBottom: "4px" }} />
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-sub") }}>{item.date}</div>
               <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
               <p style={{ fontSize: "9px", lineHeight: 1.5, color: c("--c-text"), margin: "2px 0 0" }}>{item.body}</p>
@@ -187,7 +187,7 @@ function EventVariant2({ data, photos }: TemplateProps) {
       </div>
 
       {/* Bottom: Notices + Voices */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", minHeight: 0 }}>
         {sec.notices.items.length > 0 && (
           <div style={{ background: `color-mix(in srgb, ${c("--c-accent")} 6%, white)`, borderRadius: "10px", padding: "10px" }}>
             <h3 style={{ fontSize: "11px", fontWeight: 700, color: c("--c-accent"), margin: "0 0 6px" }}>{sec.notices.title}</h3>
@@ -240,14 +240,14 @@ function EventVariant3({ data, photos }: TemplateProps) {
       </div>
 
       {/* Timeline layout */}
-      <div style={{ flex: 1, display: "flex", gap: "0", minHeight: 0 }}>
+      <div style={{ display: "flex", gap: "0", minHeight: 0 }}>
         {/* Timeline line */}
         <div style={{ width: "30px", display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
           <div style={{ width: "2px", flex: 1, background: `linear-gradient(to bottom, ${c("--c-main")}, ${c("--c-sub")}, ${c("--c-accent")})` }} />
         </div>
 
         {/* Timeline content */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {/* Schedule events on timeline */}
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", left: "-22px", top: "8px", width: "12px", height: "12px", borderRadius: "50%", background: c("--c-main"), border: "2px solid #fff", boxShadow: `0 0 0 2px ${c("--c-main")}` }} />

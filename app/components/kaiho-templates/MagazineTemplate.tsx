@@ -30,7 +30,7 @@ function MagazineVariant1({ data, photos }: TemplateProps) {
       </div>
 
       {/* 2-column newspaper layout */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px", minHeight: 0 }}>
         {/* Left column */}
         <div style={{ display: "flex", flexDirection: "column", borderRight: `1px solid color-mix(in srgb, ${c("--c-main")} 15%, white)`, paddingRight: "18px" }}>
           <h2 style={{ fontSize: "15px", fontWeight: 800, color: c("--c-main"), margin: "0 0 10px", borderBottom: `2px solid ${c("--c-main")}`, paddingBottom: "4px" }}>
@@ -41,7 +41,7 @@ function MagazineVariant1({ data, photos }: TemplateProps) {
               <div style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>
                 <span style={{ color: c("--c-main"), marginRight: "6px" }}>{item.date}</span>{item.headline}
               </div>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "90px", marginBottom: "6px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "140px", marginBottom: "6px" }} />
               <p style={{ fontSize: "11px", lineHeight: 1.8, color: c("--c-text"), margin: 0, textAlign: "justify" }}>{item.body}</p>
             </div>
           ))}
@@ -131,13 +131,13 @@ function MagazineVariant2({ data, photos }: TemplateProps) {
       </div>
 
       {/* 3-column layout */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", minHeight: 0 }}>
         {/* Col 1: First activity + photo */}
         <div style={{ borderRight: `1px solid color-mix(in srgb, ${c("--c-main")} 12%, white)`, paddingRight: "12px" }}>
           <h3 style={{ fontSize: "12px", fontWeight: 800, color: c("--c-main"), margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "1px" }}>{sec.activityReport.title}</h3>
           {sec.activityReport.items.slice(0, 2).map((item, i) => (
             <div key={i} style={{ marginBottom: "10px" }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "80px", marginBottom: "6px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "120px", marginBottom: "6px" }} />
               <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-text"), marginBottom: "2px" }}>
                 {item.date} {item.headline}
               </div>
@@ -229,7 +229,7 @@ function MagazineVariant3({ data, photos }: TemplateProps) {
       </div>
 
       {/* Content area */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "14px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "14px", minHeight: 0 }}>
         {/* Left: articles */}
         <div>
           <h2 style={{ fontSize: "13px", fontWeight: 800, color: c("--c-main"), margin: "0 0 8px", borderLeft: `4px solid ${c("--c-main")}`, paddingLeft: "8px" }}>{sec.activityReport.title}</h2>

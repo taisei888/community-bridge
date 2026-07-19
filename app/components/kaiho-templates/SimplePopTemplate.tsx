@@ -132,7 +132,7 @@ function SimplePopVariant2({ data, photos }: TemplateProps) {
       </div>
 
       {/* Main content - list style with clear separators */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px", minHeight: 0 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px", minHeight: 0 }}>
         {/* Activity report */}
         <div>
           <h2 style={{ fontSize: "15px", fontWeight: 800, color: c("--c-main"), margin: "0 0 8px", paddingLeft: "10px", borderLeft: `4px solid ${c("--c-main")}` }}>{sec.activityReport.title}</h2>
@@ -227,14 +227,14 @@ function SimplePopVariant3({ data, photos }: TemplateProps) {
       </div>
 
       {/* Block layout - clear sections with backgrounds */}
-      <div style={{ flex: 1, display: "grid", gridTemplateRows: "auto auto 1fr", gap: "12px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateRows: "auto auto 1fr", gap: "12px", minHeight: 0 }}>
         {/* Activities block */}
         <div style={{ background: `color-mix(in srgb, ${c("--c-main")} 5%, white)`, borderRadius: "14px", padding: "14px 16px" }}>
           <h2 style={{ fontSize: "14px", fontWeight: 800, color: c("--c-main"), margin: "0 0 10px" }}>{sec.activityReport.title}</h2>
           <div style={{ display: "flex", gap: "12px" }}>
             {sec.activityReport.items.map((item, i) => (
               <div key={i} style={{ flex: 1 }}>
-                <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "70px", marginBottom: "6px" }} />
+                <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "110px", marginBottom: "6px" }} />
                 <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-main"), marginBottom: "2px" }}>{item.date}</div>
                 <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "3px" }}>{item.headline}</div>
                 <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{item.body}</p>

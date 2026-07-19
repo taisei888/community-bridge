@@ -74,7 +74,7 @@ function PopVariant1({ data, photos }: TemplateProps) {
       </div>
 
       {/* Main content: 2 columns */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "14px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "14px", minHeight: 0 }}>
         {/* Left: Activities */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <SectionHeader title={sec.activityReport.title} bg={`color-mix(in srgb, ${c("--c-main")} 12%, white)`} color={c("--c-main")} />
@@ -82,13 +82,12 @@ function PopVariant1({ data, photos }: TemplateProps) {
             <div key={i} style={{
               background: "#fff", borderRadius: "12px", padding: "10px 12px",
               border: `1.5px solid color-mix(in srgb, ${c("--c-main")} 20%, white)`,
-              flex: 1,
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                 <DateBadge date={item.date} />
                 <span style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</span>
               </div>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "90px", marginBottom: "6px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "140px", marginBottom: "6px" }} />
               <p style={{ fontSize: "11px", lineHeight: 1.7, color: c("--c-text"), margin: 0 }}>{item.body}</p>
             </div>
           ))}
@@ -189,7 +188,7 @@ function PopVariant2({ data, photos }: TemplateProps) {
 
       {/* Activities - zigzag layout */}
       <SectionHeader title={sec.activityReport.title} bg={`color-mix(in srgb, ${c("--c-main")} 12%, white)`} color={c("--c-main")} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {sec.activityReport.items.map((item, i) => (
           <div key={i} style={{
             display: "flex", flexDirection: i % 2 === 0 ? "row" : "row-reverse",
@@ -234,7 +233,7 @@ function PopVariant2({ data, photos }: TemplateProps) {
         <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {sec.memberVoices.items.map((v, i) => (
             <div key={i} style={{
-              flex: 1, minWidth: "120px",
+              minWidth: "120px",
               background: `color-mix(in srgb, ${c("--c-accent")} 8%, white)`,
               borderRadius: "10px", padding: "8px", display: "flex", alignItems: "center", gap: "8px",
               border: `1px solid color-mix(in srgb, ${c("--c-accent")} 15%, white)`,
@@ -283,17 +282,17 @@ function PopVariant3({ data, photos }: TemplateProps) {
       </div>
 
       {/* 3-column colorful cards */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", minHeight: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", minHeight: 0 }}>
         {/* Col 1: Activities */}
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <div style={{ background: c("--c-main"), color: "#fff", borderRadius: "10px", padding: "6px 10px", fontSize: "12px", fontWeight: 700, textAlign: "center" }}>
             {sec.activityReport.title}
           </div>
           {sec.activityReport.items.map((item, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: "10px", padding: "8px", flex: 1, border: `1.5px solid color-mix(in srgb, ${c("--c-main")} 20%, white)` }}>
+            <div key={i} style={{ background: "#fff", borderRadius: "10px", padding: "8px", border: `1.5px solid color-mix(in srgb, ${c("--c-main")} 20%, white)` }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main"), marginBottom: "3px" }}>{item.date}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>{item.headline}</div>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "60px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "100px", marginBottom: "4px" }} />
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{item.body}</p>
             </div>
           ))}
@@ -315,7 +314,7 @@ function PopVariant3({ data, photos }: TemplateProps) {
           <div style={{ background: c("--c-accent"), color: "#fff", borderRadius: "10px", padding: "6px 10px", fontSize: "12px", fontWeight: 700, textAlign: "center" }}>
             {sec.notices.title}
           </div>
-          <div style={{ background: "#fff", borderRadius: "10px", padding: "8px", flex: 1, border: `1.5px solid color-mix(in srgb, ${c("--c-accent")} 20%, white)` }}>
+          <div style={{ background: "#fff", borderRadius: "10px", padding: "8px", border: `1.5px solid color-mix(in srgb, ${c("--c-accent")} 20%, white)` }}>
             {sec.notices.items.map((item, i) => (
               <div key={i} style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "6px" }}>
                 {item.headline && <span style={{ fontWeight: 700 }}>{item.headline}　</span>}{item.body}
@@ -341,7 +340,7 @@ function PopVariant3({ data, photos }: TemplateProps) {
             </div>
           ))}
           {sec.extraBox && sec.extraBox.title && (
-            <div style={{ background: `color-mix(in srgb, ${c("--c-sub")} 10%, white)`, borderRadius: "10px", padding: "8px", border: `1.5px dashed ${c("--c-sub")}`, flex: 1 }}>
+            <div style={{ background: `color-mix(in srgb, ${c("--c-sub")} 10%, white)`, borderRadius: "10px", padding: "8px", border: `1.5px dashed ${c("--c-sub")}` }}>
               <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-sub"), marginBottom: "4px" }}>{sec.extraBox.title}</div>
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{sec.extraBox.body}</p>
             </div>
