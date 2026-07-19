@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type CSSProperties } from "react";
+import { useState, useRef, useCallback, type CSSProperties } from "react";
 import { KaihoPreview } from "./kaiho-templates";
 
 /* ===== Types ===== */
@@ -62,6 +62,10 @@ const inputStyle: CSSProperties = {
   background: "#FAFBFC", outline: "none", transition: "border-color 0.15s, box-shadow 0.15s",
 };
 
+const smallInputStyle: CSSProperties = {
+  ...inputStyle, fontSize: "13px", padding: "7px 10px",
+};
+
 const focusIn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
   e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; e.target.style.background = "#fff";
 };
@@ -69,12 +73,19 @@ const focusOut = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =
   e.target.style.borderColor = "#D5D7DC"; e.target.style.boxShadow = "none"; e.target.style.background = "#FAFBFC";
 };
 
+const sectionLabelStyle: CSSProperties = {
+  fontSize: "12px", fontWeight: 700, color: "#2563EB", marginBottom: "8px",
+  paddingBottom: "4px", borderBottom: "2px solid #DBEAFE", display: "block",
+};
+
+const itemLabelStyle: CSSProperties = {
+  fontSize: "11px", fontWeight: 600, color: "#888", marginBottom: "3px", display: "block",
+};
+
 /* ===== A4 Constants ===== */
 const A4_W = 794;
 const A4_H = 1123;
 const SCALE = 0.52;
-
-
 
 export default function KaihoGenerator() {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -82,6 +93,7 @@ export default function KaihoGenerator() {
   const [kaiho, setKaiho] = useState<KaihoData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [step, setStep] = useState<"input" | "edit">("input");
   const previewRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -102,6 +114,48 @@ export default function KaihoGenerator() {
 
   const removePhoto = (idx: number) => setPhotos(photos.filter((_, i) => i !== idx));
 
+  /* ===== Kaiho deep update helpers ===== */
+  const updateKaiho = useCallback((updater: (prev: KaihoData) => KaihoData) => {
+    setKaiho(prev => prev ? updater(prev) : prev);
+  }, []);
+
+  const updateTop = useCallback((key: keyof KaihoData, value: string) => {
+    updateKaiho(k => ({ ...k, [key]: value }));
+  }, [updateKaiho]);
+
+  const updateSection = useCallback(<K extends keyof KaihoData["sections"]>(
+    section: K, key: string, value: unknown
+  ) => {
+    updateKaiho(k => ({
+      ...k,
+      sections: {
+        ...k.sections,
+        [section]: { ...k.sections[section], [key]: value },
+      },
+    }));
+  }, [updateKaiho]);
+
+  const updateArrayItem = useCallback(<K extends "activityReport" | "nextSchedule" | "notices" | "memberVoices">(
+    section: K, index: number, key: string, value: string
+  ) => {
+    updateKaiho(k => {
+      const sec = k.sections[section];
+      const items = [...(sec as { items: Record<string, unknown>[] }).items];
+      items[index] = { ...items[index], [key]: value };
+      return { ...k, sections: { ...k.sections, [section]: { ...sec, items } } };
+    });
+  }, [updateKaiho]);
+
+  const updateExtraBox = useCallback((key: string, value: string) => {
+    updateKaiho(k => ({
+      ...k,
+      sections: {
+        ...k.sections,
+        extraBox: k.sections.extraBox ? { ...k.sections.extraBox, [key]: value } : { title: "", body: "", [key]: value },
+      },
+    }));
+  }, [updateKaiho]);
+
   const generate = async () => {
     if (!form.clubName || !form.issueDate) { setError("クラブ名と発行号は必須です"); return; }
     setError(""); setLoading(true);
@@ -110,7 +164,6 @@ export default function KaihoGenerator() {
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "生成失敗"); }
       const data = await res.json();
       const sec = data.sections || {};
-      // Normalize notices: handle both string[] and {headline, body, iconPrompt}[] formats
       const normalizeNotices = (items: unknown[]): NoticeItem[] => {
         return items.map((item: unknown) => {
           if (typeof item === "string") return { headline: "", body: item, iconPrompt: "" };
@@ -128,6 +181,7 @@ export default function KaihoGenerator() {
         editor: { title: sec.editor?.title || "編集責任者", name: sec.editor?.name || "" },
       };
       setKaiho(data);
+      setStep("edit");
     } catch (err) { setError(err instanceof Error ? err.message : "エラー"); }
     finally { setLoading(false); }
   };
@@ -171,70 +225,207 @@ export default function KaihoGenerator() {
     }
   };
 
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "24px", alignItems: "start" }}>
-      {/* ===== Form ===== */}
-      <div style={{ ...cardBase, position: "sticky", top: "76px" }}>
-        <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #F0F1F3" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111" }}>会報情報を入力</h2>
-        </div>
-        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-          {FIELDS.map((f) => (
-            <div key={f.key}>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>
-                {f.label}{f.required && <span style={{ color: "#2563EB", marginLeft: "4px" }}>*</span>}
-              </label>
-              {f.multi ? (
-                <textarea name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder} rows={2}
-                  style={{ ...inputStyle, resize: "none" }} onFocus={focusIn} onBlur={focusOut} />
-              ) : (
-                <input type="text" name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder}
-                  style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
-              )}
-            </div>
-          ))}
-          <div>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>写真（最大4枚）</label>
-            <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhotos} style={{ display: "none" }} />
-            <button type="button" onClick={() => fileRef.current?.click()}
-              style={{ width: "100%", padding: "12px", border: "2px dashed #D5D7DC", borderRadius: "10px", background: "#FAFBFC", color: "#888", fontSize: "14px", cursor: "pointer", transition: "all 0.15s" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#2563EB"; e.currentTarget.style.color = "#2563EB"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "#D5D7DC"; e.currentTarget.style.color = "#888"; }}>
-              + 写真を追加
-            </button>
-            {photos.length > 0 && (
-              <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
-                {photos.map((p, i) => (
-                  <div key={i} style={{ position: "relative", width: "76px", height: "76px" }}>
-                    <img src={p} alt="" style={{ width: "76px", height: "76px", objectFit: "cover", borderRadius: "8px", border: "1px solid #E2E4E9" }} />
-                    <button onClick={() => removePhoto(i)} style={{
-                      position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%",
-                      background: "#EF4444", color: "#fff", border: "2px solid #fff", fontSize: "11px", cursor: "pointer",
-                      display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
-                    }}>x</button>
-                  </div>
-                ))}
-              </div>
+  const backToInput = () => { setStep("input"); };
+
+  /* ===== Render: Input Form ===== */
+  const renderInputForm = () => (
+    <div style={{ ...cardBase, position: "sticky", top: "76px" }}>
+      <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #F0F1F3" }}>
+        <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111" }}>会報情報を入力</h2>
+      </div>
+      <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        {FIELDS.map((f) => (
+          <div key={f.key}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>
+              {f.label}{f.required && <span style={{ color: "#2563EB", marginLeft: "4px" }}>*</span>}
+            </label>
+            {f.multi ? (
+              <textarea name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder} rows={2}
+                style={{ ...inputStyle, resize: "none" }} onFocus={focusIn} onBlur={focusOut} />
+            ) : (
+              <input type="text" name={f.key} value={form[f.key]} onChange={set} placeholder={f.placeholder}
+                style={inputStyle} onFocus={focusIn} onBlur={focusOut} />
             )}
           </div>
-        </div>
-        <div style={{ padding: "0 24px 24px" }}>
-          {error && <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "10px", padding: "10px 14px", color: "#DC2626", fontSize: "13px", marginBottom: "12px" }}>{error}</div>}
-          <button onClick={generate} disabled={loading} style={{
-            width: "100%", padding: "12px", border: "none", borderRadius: "10px",
-            background: loading ? "#93C5FD" : "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-            color: "#fff", fontSize: "15px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-            boxShadow: "0 2px 8px rgba(37,99,235,0.25)", transition: "all 0.15s",
-          }}>
-            {loading ? (
-              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-                <span style={{ width: "18px", height: "18px", border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.6s linear infinite", display: "inline-block" }} />
-                生成中...
-              </span>
-            ) : "会報を生成"}
+        ))}
+        <div>
+          <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>写真（最大4枚）</label>
+          <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhotos} style={{ display: "none" }} />
+          <button type="button" onClick={() => fileRef.current?.click()}
+            style={{ width: "100%", padding: "12px", border: "2px dashed #D5D7DC", borderRadius: "10px", background: "#FAFBFC", color: "#888", fontSize: "14px", cursor: "pointer", transition: "all 0.15s" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "#2563EB"; e.currentTarget.style.color = "#2563EB"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#D5D7DC"; e.currentTarget.style.color = "#888"; }}>
+            + 写真を追加
           </button>
+          {photos.length > 0 && (
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
+              {photos.map((p, i) => (
+                <div key={i} style={{ position: "relative", width: "76px", height: "76px" }}>
+                  <img src={p} alt="" style={{ width: "76px", height: "76px", objectFit: "cover", borderRadius: "8px", border: "1px solid #E2E4E9" }} />
+                  <button onClick={() => removePhoto(i)} style={{
+                    position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%",
+                    background: "#EF4444", color: "#fff", border: "2px solid #fff", fontSize: "11px", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
+                  }}>x</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+      <div style={{ padding: "0 24px 24px" }}>
+        {error && <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "10px", padding: "10px 14px", color: "#DC2626", fontSize: "13px", marginBottom: "12px" }}>{error}</div>}
+        <button onClick={generate} disabled={loading} style={{
+          width: "100%", padding: "12px", border: "none", borderRadius: "10px",
+          background: loading ? "#93C5FD" : "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
+          color: "#fff", fontSize: "15px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
+          boxShadow: "0 2px 8px rgba(37,99,235,0.25)", transition: "all 0.15s",
+        }}>
+          {loading ? (
+            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+              <span style={{ width: "18px", height: "18px", border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.6s linear infinite", display: "inline-block" }} />
+              生成中...
+            </span>
+          ) : (kaiho ? "再生成" : "会報を生成")}
+        </button>
+      </div>
+    </div>
+  );
+
+  /* ===== Render: Edit Form ===== */
+  const renderEditForm = () => {
+    if (!kaiho) return null;
+    const sec = kaiho.sections;
+
+    return (
+      <div style={{ ...cardBase, position: "sticky", top: "76px", maxHeight: "calc(100vh - 92px)", display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "16px 20px 12px", borderBottom: "1px solid #F0F1F3", flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", margin: 0 }}>内容を編集</h2>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <button onClick={backToInput} style={{
+              padding: "5px 12px", border: "1px solid #D5D7DC", borderRadius: "8px",
+              background: "#fff", color: "#555", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+            }}>入力に戻る</button>
+            <button onClick={generate} disabled={loading} style={{
+              padding: "5px 12px", border: "none", borderRadius: "8px",
+              background: "#2563EB", color: "#fff", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+            }}>{loading ? "生成中..." : "再生成"}</button>
+          </div>
+        </div>
+
+        <div style={{ padding: "16px 20px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "14px" }}>
+          {/* Title & Subtitle */}
+          <div>
+            <span style={sectionLabelStyle}>タイトル</span>
+            <input value={kaiho.title} onChange={e => updateTop("title", e.target.value)}
+              style={smallInputStyle} onFocus={focusIn} onBlur={focusOut} />
+            <input value={kaiho.subtitle} onChange={e => updateTop("subtitle", e.target.value)}
+              placeholder="サブタイトル" style={{ ...smallInputStyle, marginTop: "6px" }} onFocus={focusIn} onBlur={focusOut} />
+          </div>
+
+          {/* Activity Report */}
+          <div>
+            <span style={sectionLabelStyle}>{sec.activityReport.title}</span>
+            {sec.activityReport.items.map((item, i) => (
+              <div key={i} style={{ marginBottom: "10px", padding: "10px", background: "#F8FAFC", borderRadius: "8px", border: "1px solid #EEF0F4" }}>
+                <div style={{ display: "flex", gap: "6px", marginBottom: "5px" }}>
+                  <div style={{ flex: "0 0 100px" }}>
+                    <span style={itemLabelStyle}>日付</span>
+                    <input value={item.date} onChange={e => updateArrayItem("activityReport", i, "date", e.target.value)}
+                      style={smallInputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <span style={itemLabelStyle}>見出し</span>
+                    <input value={item.headline} onChange={e => updateArrayItem("activityReport", i, "headline", e.target.value)}
+                      style={smallInputStyle} onFocus={focusIn} onBlur={focusOut} />
+                  </div>
+                </div>
+                <span style={itemLabelStyle}>本文</span>
+                <textarea value={item.body} onChange={e => updateArrayItem("activityReport", i, "body", e.target.value)}
+                  rows={3} style={{ ...smallInputStyle, resize: "vertical" }} onFocus={focusIn} onBlur={focusOut} />
+              </div>
+            ))}
+          </div>
+
+          {/* Schedule */}
+          <div>
+            <span style={sectionLabelStyle}>{sec.nextSchedule.title}</span>
+            {sec.nextSchedule.items.map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: "6px", marginBottom: "5px" }}>
+                <input value={item.date} onChange={e => updateArrayItem("nextSchedule", i, "date", e.target.value)}
+                  style={{ ...smallInputStyle, flex: "0 0 110px" }} onFocus={focusIn} onBlur={focusOut} placeholder="日付" />
+                <input value={item.event} onChange={e => updateArrayItem("nextSchedule", i, "event", e.target.value)}
+                  style={{ ...smallInputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} placeholder="予定" />
+              </div>
+            ))}
+          </div>
+
+          {/* Notices */}
+          <div>
+            <span style={sectionLabelStyle}>{sec.notices.title}</span>
+            {sec.notices.items.map((item, i) => (
+              <div key={i} style={{ marginBottom: "6px" }}>
+                <input value={item.headline} onChange={e => updateArrayItem("notices", i, "headline", e.target.value)}
+                  style={{ ...smallInputStyle, marginBottom: "4px" }} onFocus={focusIn} onBlur={focusOut} placeholder="見出し" />
+                <textarea value={item.body} onChange={e => updateArrayItem("notices", i, "body", e.target.value)}
+                  rows={2} style={{ ...smallInputStyle, resize: "vertical" }} onFocus={focusIn} onBlur={focusOut} placeholder="内容" />
+              </div>
+            ))}
+          </div>
+
+          {/* Member Voices */}
+          <div>
+            <span style={sectionLabelStyle}>{sec.memberVoices.title}</span>
+            {sec.memberVoices.items.map((v, i) => (
+              <div key={i} style={{ display: "flex", gap: "6px", marginBottom: "5px" }}>
+                <input value={v.name} onChange={e => updateArrayItem("memberVoices", i, "name", e.target.value)}
+                  style={{ ...smallInputStyle, flex: "0 0 80px" }} onFocus={focusIn} onBlur={focusOut} placeholder="名前" />
+                <input value={v.comment} onChange={e => updateArrayItem("memberVoices", i, "comment", e.target.value)}
+                  style={{ ...smallInputStyle, flex: 1 }} onFocus={focusIn} onBlur={focusOut} placeholder="ひとこと" />
+              </div>
+            ))}
+          </div>
+
+          {/* Extra Box */}
+          {sec.extraBox && (
+            <div>
+              <span style={sectionLabelStyle}>今月のコラム</span>
+              <input value={sec.extraBox.title} onChange={e => updateExtraBox("title", e.target.value)}
+                style={{ ...smallInputStyle, marginBottom: "4px" }} onFocus={focusIn} onBlur={focusOut} placeholder="タイトル" />
+              <textarea value={sec.extraBox.body} onChange={e => updateExtraBox("body", e.target.value)}
+                rows={2} style={{ ...smallInputStyle, resize: "vertical" }} onFocus={focusIn} onBlur={focusOut} placeholder="内容" />
+            </div>
+          )}
+
+          {/* Editor Note */}
+          <div>
+            <span style={sectionLabelStyle}>編集後記</span>
+            <textarea value={sec.editorNote.body} onChange={e => updateSection("editorNote", "body", e.target.value)}
+              rows={3} style={{ ...smallInputStyle, resize: "vertical" }} onFocus={focusIn} onBlur={focusOut} />
+          </div>
+
+          {/* Editor Name */}
+          <div>
+            <span style={sectionLabelStyle}>編集責任者</span>
+            <input value={sec.editor.name} onChange={e => updateSection("editor", "name", e.target.value)}
+              style={smallInputStyle} onFocus={focusIn} onBlur={focusOut} />
+          </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div style={{ padding: "0 20px 12px", flexShrink: 0 }}>
+            <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "10px", padding: "10px 14px", color: "#DC2626", fontSize: "13px" }}>{error}</div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "400px 1fr", gap: "24px", alignItems: "start" }}>
+      {/* ===== Left Panel ===== */}
+      {step === "input" ? renderInputForm() : renderEditForm()}
 
       {/* ===== Preview ===== */}
       <div>
@@ -289,4 +480,3 @@ export default function KaihoGenerator() {
     </div>
   );
 }
-
