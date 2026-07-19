@@ -37,11 +37,11 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
               <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#fff", margin: "0 0 2px", letterSpacing: "2px", textShadow: "0 1px 4px rgba(0,0,0,0.3)" }}>
                 {data.title}
               </h1>
-              <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.8)", margin: 0 }}>{data.subtitle}</p>
+              <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.8)", margin: 0 }}>{data.subtitle}</p>
             </div>
             <div style={{ textAlign: "right" }}>
-              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.7)" }}>{data.issueLabel}</span>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.7)" }}>{data.publishDate}</div>
+              <span style={{ fontSize: "15px", color: "rgba(255,255,255,0.7)" }}>{data.issueLabel}</span>
+              <div style={{ fontSize: "15px", color: "rgba(255,255,255,0.7)" }}>{data.publishDate}</div>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
 
       {/* Activity cards with large images */}
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <div style={{ fontSize: "14px", fontWeight: 800, color: c("--c-main"), display: "flex", alignItems: "center", gap: "6px" }}>
+        <div style={{ fontSize: "17px", fontWeight: 800, color: c("--c-main"), display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "4px", height: "16px", background: c("--c-main"), borderRadius: "2px" }} />
           {sec.activityReport.title}
         </div>
@@ -61,9 +61,9 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
           }}>
             <PhotoOrPlaceholder photo={photos[i + 1]} index={i + 1} style={{ width: "140px", flexShrink: 0 }} />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main"), marginBottom: "3px" }}>{item.date}</div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>{item.headline}</div>
-              <p style={{ fontSize: "11px", lineHeight: 1.7, color: c("--c-text"), margin: 0, opacity: 0.8 }}>{item.body}</p>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-main"), marginBottom: "3px" }}>{item.date}</div>
+              <div style={{ fontSize: "16px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>{item.headline}</div>
+              <p style={{ fontSize: "17px", lineHeight: 1.7, color: c("--c-text"), margin: 0, opacity: 0.8 }}>{item.body}</p>
             </div>
           </div>
         ))}
@@ -75,9 +75,9 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
           background: `color-mix(in srgb, ${c("--c-sub")} 10%, white)`,
           borderRadius: "12px", padding: "10px",
         }}>
-          <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-sub"), marginBottom: "8px" }}>{sec.nextSchedule.title}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-sub"), marginBottom: "8px" }}>{sec.nextSchedule.title}</div>
           {sec.nextSchedule.items.map((item, i) => (
-            <div key={i} style={{ fontSize: "11px", color: c("--c-text"), marginBottom: "6px" }}>
+            <div key={i} style={{ fontSize: "17px", color: c("--c-text"), marginBottom: "6px" }}>
               <span style={{ fontWeight: 700, color: c("--c-sub") }}>{item.date}</span> {item.event}
             </div>
           ))}
@@ -86,9 +86,9 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
           background: `color-mix(in srgb, ${c("--c-accent")} 10%, white)`,
           borderRadius: "12px", padding: "10px",
         }}>
-          <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-accent"), marginBottom: "8px" }}>{sec.notices.title}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-accent"), marginBottom: "8px" }}>{sec.notices.title}</div>
           {sec.notices.items.map((item, i) => (
-            <div key={i} style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "5px" }}>
+            <div key={i} style={{ fontSize: "15px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "5px" }}>
               {item.headline && <span style={{ fontWeight: 700 }}>{item.headline} </span>}{item.body}
             </div>
           ))}
@@ -101,11 +101,11 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
           {sec.memberVoices.items.map((v, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fff", borderRadius: "10px", padding: "8px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
               <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: c("--c-accent"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ color: "#fff", fontSize: "13px", fontWeight: 700 }}>{v.name.charAt(0)}</span>
+                <span style={{ color: "#fff", fontSize: "16px", fontWeight: 700 }}>{v.name.charAt(0)}</span>
               </div>
               <div>
-                <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-text") }}>{v.name}</div>
-                <div style={{ fontSize: "9px", color: c("--c-text"), opacity: 0.7 }}>「{v.comment}」</div>
+                <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-text") }}>{v.name}</div>
+                <div style={{ fontSize: "17px", color: c("--c-text"), opacity: 0.7 }}>「{v.comment}」</div>
               </div>
             </div>
           ))}
@@ -113,7 +113,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "17px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
         {sec.editorNote.body} ／ {sec.editor.title}：{sec.editor.name} ／ {data.clubName}
       </div>
     </div>
@@ -131,24 +131,24 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", padding: "10px 16px", background: `color-mix(in srgb, ${c("--c-main")} 10%, white)`, borderRadius: "12px" }}>
         <div>
           <h1 style={{ fontSize: "24px", fontWeight: 900, color: c("--c-main"), margin: 0, letterSpacing: "2px" }}>{data.title}</h1>
-          <p style={{ fontSize: "11px", color: c("--c-text"), opacity: 0.6, margin: "2px 0 0" }}>{data.subtitle}</p>
+          <p style={{ fontSize: "17px", color: c("--c-text"), opacity: 0.6, margin: "2px 0 0" }}>{data.subtitle}</p>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{data.issueLabel}</div>
-          <div style={{ fontSize: "10px", color: c("--c-text"), opacity: 0.5 }}>{data.publishDate}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-main") }}>{data.issueLabel}</div>
+          <div style={{ fontSize: "15px", color: c("--c-text"), opacity: 0.5 }}>{data.publishDate}</div>
         </div>
       </div>
 
       {/* Photo grid + activity text */}
-      <div style={{ fontSize: "13px", fontWeight: 800, color: c("--c-main"), marginBottom: "8px" }}>{sec.activityReport.title}</div>
+      <div style={{ fontSize: "16px", fontWeight: 800, color: c("--c-main"), marginBottom: "8px" }}>{sec.activityReport.title}</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
         {sec.activityReport.items.map((item, i) => (
           <div key={i} style={{ background: "#fff", borderRadius: "12px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
             <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "100px", borderRadius: "0" }} />
             <div style={{ padding: "8px 10px" }}>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
-              <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "3px" }}>{item.headline}</div>
-              <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0, opacity: 0.8 }}>{item.body}</p>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-text"), marginBottom: "3px" }}>{item.headline}</div>
+              <p style={{ fontSize: "15px", lineHeight: 1.6, color: c("--c-text"), margin: 0, opacity: 0.8 }}>{item.body}</p>
             </div>
           </div>
         ))}
@@ -156,10 +156,10 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
 
       {/* Schedule */}
       <div style={{ background: `color-mix(in srgb, ${c("--c-sub")} 8%, white)`, borderRadius: "12px", padding: "10px 14px", marginBottom: "10px" }}>
-        <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-sub"), marginBottom: "6px" }}>{sec.nextSchedule.title}</div>
+        <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-sub"), marginBottom: "6px" }}>{sec.nextSchedule.title}</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
           {sec.nextSchedule.items.map((item, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", fontSize: "10px", color: c("--c-text") }}>
+            <div key={i} style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", fontSize: "15px", color: c("--c-text") }}>
               <span style={{ fontWeight: 700, color: c("--c-sub") }}>{item.date}</span> {item.event}
             </div>
           ))}
@@ -170,9 +170,9 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
       <div style={{ display: "grid", gridTemplateColumns: sec.extraBox ? "1fr 1fr" : "1fr", gap: "10px", marginBottom: "10px" }}>
         {sec.notices.items.length > 0 && (
           <div style={{ background: "#fff", borderRadius: "12px", padding: "10px", border: `1.5px solid color-mix(in srgb, ${c("--c-accent")} 20%, white)` }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-accent"), marginBottom: "6px" }}>{sec.notices.title}</div>
+            <div style={{ fontSize: "17px", fontWeight: 700, color: c("--c-accent"), marginBottom: "6px" }}>{sec.notices.title}</div>
             {sec.notices.items.map((item, i) => (
-              <div key={i} style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "4px" }}>
+              <div key={i} style={{ fontSize: "15px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "4px" }}>
                 • {item.headline && <span style={{ fontWeight: 700 }}>{item.headline} </span>}{item.body}
               </div>
             ))}
@@ -180,8 +180,8 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
         )}
         {sec.extraBox && sec.extraBox.title && (
           <div style={{ background: `color-mix(in srgb, ${c("--c-sub")} 8%, white)`, borderRadius: "12px", padding: "10px", border: `1.5px dashed ${c("--c-sub")}` }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-sub"), marginBottom: "4px" }}>{sec.extraBox.title}</div>
-            <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{sec.extraBox.body}</p>
+            <div style={{ fontSize: "17px", fontWeight: 700, color: c("--c-sub"), marginBottom: "4px" }}>{sec.extraBox.title}</div>
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{sec.extraBox.body}</p>
           </div>
         )}
       </div>
@@ -192,17 +192,17 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
           {sec.memberVoices.items.map((v, i) => (
             <div key={i} style={{ background: `color-mix(in srgb, ${c("--c-accent")} 6%, white)`, borderRadius: "10px", padding: "8px", textAlign: "center" }}>
               <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: c("--c-accent"), margin: "0 auto 4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ color: "#fff", fontSize: "12px", fontWeight: 700 }}>{v.name.charAt(0)}</span>
+                <span style={{ color: "#fff", fontSize: "15px", fontWeight: 700 }}>{v.name.charAt(0)}</span>
               </div>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-text") }}>{v.name}</div>
-              <div style={{ fontSize: "9px", color: c("--c-text"), opacity: 0.7, marginTop: "2px" }}>「{v.comment}」</div>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-text") }}>{v.name}</div>
+              <div style={{ fontSize: "17px", color: c("--c-text"), opacity: 0.7, marginTop: "2px" }}>「{v.comment}」</div>
             </div>
           ))}
         </div>
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "17px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
         <span>{sec.editorNote.body}</span>
         <span>{sec.editor.name} / {data.clubName}</span>
       </div>
@@ -219,11 +219,11 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
 
       {/* Header - playful angle */}
       <div style={{ textAlign: "center", marginBottom: "12px" }}>
-        <div style={{ display: "inline-block", background: c("--c-main"), color: "#fff", padding: "4px 20px", borderRadius: "0 0 10px 10px", fontSize: "10px", fontWeight: 700, marginBottom: "6px" }}>
+        <div style={{ display: "inline-block", background: c("--c-main"), color: "#fff", padding: "4px 20px", borderRadius: "0 0 10px 10px", fontSize: "15px", fontWeight: 700, marginBottom: "6px" }}>
           {data.issueLabel}　{data.publishDate}
         </div>
         <h1 style={{ fontSize: "26px", fontWeight: 900, color: c("--c-main"), margin: "4px 0", letterSpacing: "2px" }}>{data.title}</h1>
-        <p style={{ fontSize: "11px", color: c("--c-text"), opacity: 0.5, margin: 0 }}>{data.subtitle}</p>
+        <p style={{ fontSize: "17px", color: c("--c-text"), opacity: 0.5, margin: 0 }}>{data.subtitle}</p>
       </div>
 
       {/* Collage area: scattered cards */}
@@ -236,9 +236,9 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
             transform: `rotate(${i % 2 === 0 ? "-1" : "1"}deg)`,
           }}>
             <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "120px", marginBottom: "6px" }} />
-            <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
-            <p style={{ fontSize: "10px", lineHeight: 1.5, color: c("--c-text"), margin: "3px 0 0", opacity: 0.8 }}>{item.body}</p>
+            <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
+            <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
+            <p style={{ fontSize: "15px", lineHeight: 1.5, color: c("--c-text"), margin: "3px 0 0", opacity: 0.8 }}>{item.body}</p>
           </div>
         ))}
 
@@ -248,9 +248,9 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
           borderRadius: "10px", padding: "10px",
           transform: "rotate(0.5deg)",
         }}>
-          <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-sub"), marginBottom: "6px" }}>{sec.nextSchedule.title}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-sub"), marginBottom: "6px" }}>{sec.nextSchedule.title}</div>
           {sec.nextSchedule.items.map((item, i) => (
-            <div key={i} style={{ fontSize: "10px", color: c("--c-text"), marginBottom: "5px" }}>
+            <div key={i} style={{ fontSize: "15px", color: c("--c-text"), marginBottom: "5px" }}>
               <span style={{ fontWeight: 700, color: c("--c-sub") }}>{item.date}</span> {item.event}
             </div>
           ))}
@@ -262,9 +262,9 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
           borderRadius: "10px", padding: "10px",
           transform: "rotate(-0.5deg)",
         }}>
-          <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-accent"), marginBottom: "6px" }}>{sec.notices.title}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-accent"), marginBottom: "6px" }}>{sec.notices.title}</div>
           {sec.notices.items.map((item, i) => (
-            <div key={i} style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "4px" }}>
+            <div key={i} style={{ fontSize: "15px", lineHeight: 1.6, color: c("--c-text"), marginBottom: "4px" }}>
               • {item.headline && <span style={{ fontWeight: 700 }}>{item.headline} </span>}{item.body}
             </div>
           ))}
@@ -280,15 +280,15 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
               background: "#fff", borderRadius: "12px", padding: "8px 10px",
               boxShadow: "0 1px 4px rgba(0,0,0,0.05)", position: "relative",
             }}>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{v.name}</div>
-              <div style={{ fontSize: "9px", color: c("--c-text"), opacity: 0.8, marginTop: "2px" }}>「{v.comment}」</div>
+              <div style={{ fontSize: "15px", fontWeight: 700, color: c("--c-main") }}>{v.name}</div>
+              <div style={{ fontSize: "17px", color: c("--c-text"), opacity: 0.8, marginTop: "2px" }}>「{v.comment}」</div>
             </div>
           ))}
         </div>
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "17px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
         {sec.editorNote.body} ／ {sec.editor.name} ／ {data.clubName}
       </div>
     </div>
