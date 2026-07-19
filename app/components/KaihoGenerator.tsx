@@ -82,6 +82,58 @@ const NL = {
   textSub: "#777777",
 };
 
+/* ===== Activity Illustration SVGs (placeholder when no photo) ===== */
+const ActivityIllustration = ({ index }: { index: number }) => {
+  const illustrations = [
+    // People doing group activity
+    <svg key="0" width="100%" height="100%" viewBox="0 0 200 100" fill="none" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="100" fill="#E8F0E0" rx="6" />
+      <circle cx="50" cy="40" r="12" fill={NL.green} opacity="0.3" />
+      <circle cx="50" cy="60" r="6" fill={NL.green} opacity="0.2" />
+      <rect x="44" y="66" width="12" height="18" rx="3" fill={NL.green} opacity="0.2" />
+      <circle cx="100" cy="38" r="12" fill={NL.greenDark} opacity="0.25" />
+      <circle cx="100" cy="58" r="6" fill={NL.greenDark} opacity="0.2" />
+      <rect x="94" y="64" width="12" height="18" rx="3" fill={NL.greenDark} opacity="0.2" />
+      <circle cx="150" cy="42" r="12" fill={NL.orange} opacity="0.25" />
+      <circle cx="150" cy="62" r="6" fill={NL.orange} opacity="0.2" />
+      <rect x="144" y="68" width="12" height="18" rx="3" fill={NL.orange} opacity="0.2" />
+      <path d="M20 90 Q60 75 100 85 Q140 95 180 80" stroke={NL.green} strokeWidth="2" opacity="0.2" fill="none" />
+      <circle cx="30" cy="20" r="4" fill={NL.orange} opacity="0.15" />
+      <circle cx="170" cy="15" r="3" fill={NL.green} opacity="0.15" />
+    </svg>,
+    // Nature/outdoor scene
+    <svg key="1" width="100%" height="100%" viewBox="0 0 200 100" fill="none" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="100" fill="#EAF3E1" rx="6" />
+      <path d="M0 85 Q30 60 60 75 Q90 90 120 70 Q150 50 180 65 Q200 75 200 85 V100 H0 Z" fill={NL.green} opacity="0.15" />
+      <path d="M60 75 L75 40 L90 75 Z" fill={NL.green} opacity="0.25" />
+      <path d="M75 60 L85 35 L95 60 Z" fill={NL.greenDark} opacity="0.2" />
+      <path d="M130 70 L150 30 L170 70 Z" fill={NL.green} opacity="0.3" />
+      <path d="M140 55 L155 25 L170 55 Z" fill={NL.greenDark} opacity="0.2" />
+      <circle cx="45" cy="25" r="15" fill={NL.orange} opacity="0.2" />
+      <path d="M20 80 Q25 65 35 80 Q28 72 20 80 Z" fill={NL.green} opacity="0.3" />
+      <circle cx="160" cy="20" r="3" fill={NL.orange} opacity="0.15" />
+    </svg>,
+    // Exercise/health
+    <svg key="2" width="100%" height="100%" viewBox="0 0 200 100" fill="none" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="100" fill="#E8F4FA" rx="6" />
+      <circle cx="70" cy="35" r="10" fill={NL.blue} opacity="0.25" />
+      <path d="M70 45 L70 70" stroke={NL.blue} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <path d="M55 55 L70 50 L85 45" stroke={NL.blue} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <path d="M60 80 L70 70 L80 80" stroke={NL.blue} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <circle cx="130" cy="35" r="10" fill={NL.green} opacity="0.25" />
+      <path d="M130 45 L130 70" stroke={NL.green} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <path d="M115 50 L130 55 L145 50" stroke={NL.green} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <path d="M120 80 L130 70 L140 80" stroke={NL.green} strokeWidth="3" opacity="0.25" strokeLinecap="round" />
+      <circle cx="30" cy="20" r="5" fill={NL.pink} opacity="0.2" />
+      <circle cx="170" cy="25" r="4" fill={NL.orange} opacity="0.15" />
+    </svg>,
+  ];
+  return illustrations[index % illustrations.length];
+};
+
+/* ===== Member Avatar Colors ===== */
+const AVATAR_COLORS = ["#7BAE5E", "#E8A849", "#7EB8D8", "#E8A0B4", "#9B8EC5", "#5EAEB4"];
+
 export default function KaihoGenerator() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [photos, setPhotos] = useState<string[]>([]);
@@ -115,7 +167,6 @@ export default function KaihoGenerator() {
       const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "生成失敗"); }
       const data = await res.json();
-      // Defensive: ensure sections and all sub-objects exist
       const sec = data.sections || {};
       data.sections = {
         activityReport: { title: sec.activityReport?.title || "今月の活動報告", items: Array.isArray(sec.activityReport?.items) ? sec.activityReport.items : [] },
@@ -139,9 +190,7 @@ export default function KaihoGenerator() {
     const slide = pptx.addSlide();
     slide.background = { color: "FBF7EC" };
 
-    // Header
     slide.addShape(pptx.ShapeType.roundRect, { x: 0.3, y: 0.2, w: 6.9, h: 1.2, fill: { color: "EAF3E1" }, rectRadius: 0.15, line: { color: "C8D4B8", width: 1 } });
-    slide.addText(kaiho.issueLabel || form.issueDate, { x: 0.5, y: 0.28, w: 2, h: 0.25, fontSize: 9, color: "FFFFFF", fontFace: "Hiragino Kaku Gothic ProN" });
     slide.addShape(pptx.ShapeType.roundRect, { x: 0.45, y: 0.25, w: 1.5, h: 0.25, fill: { color: "7BAE5E" }, rectRadius: 0.12 });
     slide.addText(kaiho.issueLabel || form.issueDate, { x: 0.5, y: 0.25, w: 1.4, h: 0.25, fontSize: 8, color: "FFFFFF", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
     slide.addText(kaiho.title, { x: 0.5, y: 0.55, w: 6.5, h: 0.55, fontSize: 24, bold: true, color: "4D7A35", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
@@ -150,7 +199,6 @@ export default function KaihoGenerator() {
     let y = 1.65;
     const sec = kaiho.sections;
 
-    // Activity Report
     slide.addShape(pptx.ShapeType.roundRect, { x: 0.4, y, w: 3.2, h: 0.3, fill: { color: "EAF3E1" }, rectRadius: 0.05 });
     slide.addText(sec.activityReport.title, { x: 0.55, y, w: 3, h: 0.3, fontSize: 11, bold: true, color: "4D7A35", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
     let ay = y + 0.36;
@@ -164,7 +212,6 @@ export default function KaihoGenerator() {
       ay += h + 0.1;
     });
 
-    // Schedule (right column)
     slide.addShape(pptx.ShapeType.roundRect, { x: 3.85, y, w: 3.25, h: 0.3, fill: { color: "E8F4FA" }, rectRadius: 0.05 });
     slide.addText(sec.nextSchedule.title, { x: 4.0, y, w: 3, h: 0.3, fontSize: 11, bold: true, color: "3A7FA8", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
     let sy = y + 0.36;
@@ -174,7 +221,6 @@ export default function KaihoGenerator() {
       sy += 0.24;
     });
 
-    // Notices (right column below schedule)
     if (sec.notices.items.length > 0) {
       sy += 0.15;
       slide.addShape(pptx.ShapeType.roundRect, { x: 3.85, y: sy, w: 3.25, h: 0.3, fill: { color: "FFF3E0" }, rectRadius: 0.05 });
@@ -182,12 +228,11 @@ export default function KaihoGenerator() {
       sy += 0.36;
       sec.notices.items.forEach((item) => {
         if (sy > 6.5) return;
-        slide.addText(`・${item}`, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
+        slide.addText(`\u30FB${item}`, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
         sy += 0.24;
       });
     }
 
-    // Member Voices
     const vy = Math.max(ay, sy) + 0.15;
     if (vy < 8.5) {
       slide.addShape(pptx.ShapeType.roundRect, { x: 0.4, y: vy, w: 6.7, h: 0.3, fill: { color: "FDE8EF" }, rectRadius: 0.05 });
@@ -195,15 +240,14 @@ export default function KaihoGenerator() {
       let my = vy + 0.36;
       sec.memberVoices.items.forEach((v) => {
         if (my > 9) return;
-        slide.addText(`${v.name}：「${v.comment}」`, { x: 0.55, y: my, w: 6.4, h: 0.22, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
+        slide.addText(`${v.name}\uFF1A\u300C${v.comment}\u300D`, { x: 0.55, y: my, w: 6.4, h: 0.22, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
         my += 0.26;
       });
     }
 
-    // Footer
-    slide.addText(`${sec.editorNote.body}`, { x: 0.5, y: 9.6, w: 5.5, h: 0.4, fontSize: 7, color: "777777", fontFace: "Hiragino Kaku Gothic ProN", valign: "top", lineSpacingMultiple: 1.3 });
-    slide.addText(`編集: ${sec.editor.name}`, { x: 6.0, y: 9.7, w: 1.2, h: 0.25, fontSize: 8, color: "4D7A35", align: "right", bold: true, fontFace: "Hiragino Kaku Gothic ProN" });
-    slide.addText(`発行: ${kaiho.clubName} / ${kaiho.publishDate}`, { x: 0.5, y: 10.15, w: 6.5, h: 0.2, fontSize: 7, color: "AAAAAA", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
+    slide.addText(sec.editorNote.body, { x: 0.5, y: 9.6, w: 5.5, h: 0.4, fontSize: 7, color: "777777", fontFace: "Hiragino Kaku Gothic ProN", valign: "top", lineSpacingMultiple: 1.3 });
+    slide.addText(`\u7DE8\u96C6: ${sec.editor.name}`, { x: 6.0, y: 9.7, w: 1.2, h: 0.25, fontSize: 8, color: "4D7A35", align: "right", bold: true, fontFace: "Hiragino Kaku Gothic ProN" });
+    slide.addText(`\u767A\u884C: ${kaiho.clubName} / ${kaiho.publishDate}`, { x: 0.5, y: 10.15, w: 6.5, h: 0.2, fontSize: 7, color: "AAAAAA", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
 
     await pptx.writeFile({ fileName: `${kaiho.title}.pptx` });
   };
@@ -217,28 +261,6 @@ export default function KaihoGenerator() {
     pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
     pdf.save(`${kaiho?.title || "会報"}.pdf`);
   };
-
-  /* ===== Section Card ===== */
-  const SectionCard = ({ title, color, bgColor, children, maxH }: {
-    title: string; color: string; bgColor: string; children: React.ReactNode; maxH?: number;
-  }) => (
-    <div style={{
-      background: NL.cardBg, borderRadius: "10px",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        background: bgColor, padding: "7px 14px",
-        display: "flex", alignItems: "center", gap: "7px",
-      }}>
-        <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: color, flexShrink: 0 }} />
-        <h3 style={{ fontSize: "15px", fontWeight: 700, color, margin: 0 }}>{title}</h3>
-      </div>
-      <div style={{ padding: "10px 14px", maxHeight: maxH ? `${maxH}px` : undefined, overflow: "hidden" }}>
-        {children}
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "24px", alignItems: "start" }}>
@@ -262,7 +284,6 @@ export default function KaihoGenerator() {
               )}
             </div>
           ))}
-          {/* Photo Upload */}
           <div>
             <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>写真（最大4枚）</label>
             <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhotos} style={{ display: "none" }} />
@@ -310,7 +331,6 @@ export default function KaihoGenerator() {
       <div>
         {kaiho ? (
           <div style={{ animation: "fadeUp 0.4s ease-out" }}>
-            {/* Download buttons */}
             <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
               {[{ label: "PPTX", fn: downloadPptx }, { label: "PDF", fn: downloadPdf }].map((b) => (
                 <button key={b.label} onClick={b.fn} style={{
@@ -324,13 +344,12 @@ export default function KaihoGenerator() {
               ))}
             </div>
 
-            {/* ===== A4 Preview Container ===== */}
+            {/* ===== A4 Preview ===== */}
             <div style={{
               background: "#D1D5DB", borderRadius: "12px", padding: "24px",
               display: "flex", justifyContent: "center", alignItems: "flex-start",
               minHeight: `${A4_H * SCALE + 48}px`,
             }}>
-              {/* A4 Wrapper - scaled */}
               <div style={{
                 width: `${A4_W * SCALE}px`,
                 height: `${A4_H * SCALE}px`,
@@ -339,7 +358,6 @@ export default function KaihoGenerator() {
                 borderRadius: "4px",
                 flexShrink: 0,
               }}>
-                {/* A4 Paper - actual size, scaled down via transform */}
                 <div
                   ref={previewRef}
                   style={{
@@ -351,215 +369,326 @@ export default function KaihoGenerator() {
                     transform: `scale(${SCALE})`,
                     transformOrigin: "top left",
                     fontFamily: "'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif",
-                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  {/* Corner decorations */}
-                  {[
-                    { top: 10, left: 10, bT: `2.5px solid ${NL.green}`, bL: `2.5px solid ${NL.green}`, br: "8px 0 0 0" },
-                    { top: 10, right: 10, bT: `2.5px solid ${NL.green}`, bR: `2.5px solid ${NL.green}`, br: "0 8px 0 0" },
-                    { bottom: 10, left: 10, bB: `2.5px solid ${NL.green}`, bL: `2.5px solid ${NL.green}`, br: "0 0 0 8px" },
-                    { bottom: 10, right: 10, bB: `2.5px solid ${NL.green}`, bR: `2.5px solid ${NL.green}`, br: "0 0 8px 0" },
-                  ].map((c, i) => (
-                    <div key={i} style={{
-                      position: "absolute", width: "36px", height: "36px", opacity: 0.3,
-                      top: c.top, left: c.left, right: c.right, bottom: c.bottom,
-                      borderTop: c.bT, borderLeft: c.bL, borderRight: c.bR, borderBottom: c.bB,
-                      borderRadius: c.br,
-                    } as CSSProperties} />
-                  ))}
-
                   {/* ===== HEADER ===== */}
-                  <div style={{ padding: "24px 32px 16px", textAlign: "center", position: "relative" }}>
-                    {/* Issue label - top left */}
+                  <div style={{
+                    margin: "18px 24px 0",
+                    background: NL.greenLight,
+                    borderRadius: "14px",
+                    border: `1.5px solid #C8D4B8`,
+                    padding: "14px 24px 12px",
+                    position: "relative",
+                    textAlign: "center",
+                    flexShrink: 0,
+                  }}>
+                    {/* Leaf decorations on header corners */}
+                    <svg width="50" height="40" viewBox="0 0 50 40" style={{ position: "absolute", top: "-5px", left: "-5px", opacity: 0.4 }} fill="none">
+                      <path d="M10 35 Q15 10 40 5 Q25 18 18 35Z" fill={NL.green} />
+                      <path d="M5 30 Q8 15 25 8 Q15 18 10 30Z" fill={NL.greenDark} opacity="0.6" />
+                    </svg>
+                    <svg width="50" height="40" viewBox="0 0 50 40" style={{ position: "absolute", top: "-5px", right: "-5px", opacity: 0.4, transform: "scaleX(-1)" }} fill="none">
+                      <path d="M10 35 Q15 10 40 5 Q25 18 18 35Z" fill={NL.green} />
+                      <path d="M5 30 Q8 15 25 8 Q15 18 10 30Z" fill={NL.greenDark} opacity="0.6" />
+                    </svg>
+
+                    {/* Issue label */}
                     <div style={{
-                      position: "absolute", top: "24px", left: "32px",
+                      position: "absolute", top: "10px", left: "16px",
                       background: NL.green, color: "#fff",
-                      borderRadius: "14px", padding: "3px 14px",
-                      fontSize: "11px", fontWeight: 600, letterSpacing: "0.5px",
+                      borderRadius: "12px", padding: "3px 14px",
+                      fontSize: "12px", fontWeight: 700,
                     }}>
                       {kaiho.issueLabel || form.issueDate}
                     </div>
 
-                    {/* Publish date - top right */}
+                    {/* Publish date */}
                     <div style={{
-                      position: "absolute", top: "20px", right: "32px",
-                      background: NL.cardBg, border: `1px solid ${NL.border}`,
-                      borderRadius: "8px", padding: "5px 12px", textAlign: "center",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                      position: "absolute", top: "10px", right: "16px",
+                      fontSize: "12px", color: NL.greenDark, fontWeight: 600,
                     }}>
-                      <div style={{ fontSize: "9px", color: NL.textSub, letterSpacing: "1px" }}>発行日</div>
-                      <div style={{ fontSize: "13px", fontWeight: 700, color: NL.greenDark }}>{kaiho.publishDate || form.issueDate}</div>
+                      {kaiho.publishDate || form.issueDate}
                     </div>
 
                     {/* Title */}
-                    <h1 style={{
-                      fontSize: "32px", fontWeight: 800, color: NL.greenDark,
-                      letterSpacing: "4px", margin: "8px 0 6px", lineHeight: 1.3,
-                    }}>
-                      {kaiho.title}
-                    </h1>
-
-                    {/* Subtitle */}
-                    <p style={{
-                      fontSize: "13px", color: NL.green, letterSpacing: "2px", fontWeight: 500,
-                      margin: 0,
-                    }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginTop: "6px" }}>
+                      <svg width="28" height="24" viewBox="0 0 28 24" fill="none">
+                        <path d="M24 20 Q18 4 4 2 Q10 10 14 20Z" fill={NL.green} opacity="0.4" />
+                        <path d="M20 22 Q15 8 5 5 Q12 12 16 22Z" fill={NL.greenDark} opacity="0.25" />
+                      </svg>
+                      <h1 style={{
+                        fontSize: "32px", fontWeight: 800, color: NL.greenDark,
+                        letterSpacing: "5px", margin: 0, lineHeight: 1.2,
+                      }}>
+                        {kaiho.title}
+                      </h1>
+                      <svg width="28" height="24" viewBox="0 0 28 24" fill="none" style={{ transform: "scaleX(-1)" }}>
+                        <path d="M24 20 Q18 4 4 2 Q10 10 14 20Z" fill={NL.green} opacity="0.4" />
+                        <path d="M20 22 Q15 8 5 5 Q12 12 16 22Z" fill={NL.greenDark} opacity="0.25" />
+                      </svg>
+                    </div>
+                    <p style={{ fontSize: "13px", color: NL.green, letterSpacing: "2px", fontWeight: 500, margin: "4px 0 0" }}>
                       {kaiho.subtitle}
                     </p>
-
-                    {/* Decorative line */}
-                    <div style={{
-                      width: "60%", height: "1px", margin: "12px auto 0",
-                      background: `linear-gradient(90deg, transparent, ${NL.border}, transparent)`,
-                    }} />
                   </div>
 
-                  {/* ===== MAIN CONTENT - 2 Column ===== */}
-                  <div style={{ padding: "8px 28px 0", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                    {/* Left Column: Activity Report */}
-                    <SectionCard title={kaiho.sections.activityReport.title} color={NL.greenDark} bgColor={NL.greenLight} maxH={480}>
-                      {kaiho.sections.activityReport.items.map((item, i) => (
-                        <div key={i} style={{
-                          marginBottom: i < kaiho.sections.activityReport.items.length - 1 ? "10px" : 0,
-                          paddingBottom: i < kaiho.sections.activityReport.items.length - 1 ? "10px" : 0,
-                          borderBottom: i < kaiho.sections.activityReport.items.length - 1 ? `1px dashed ${NL.border}` : "none",
-                          display: "flex", gap: "10px",
-                        }}>
-                          {/* Photo next to activity if available */}
-                          {photos[i] && (
-                            <img src={photos[i]} alt="" style={{
-                              width: "80px", height: "60px", objectFit: "cover",
-                              borderRadius: "6px", border: `1px solid ${NL.border}`, flexShrink: 0,
-                            }} />
-                          )}
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-                              {item.date && (
-                                <span style={{
-                                  background: NL.orangeLight, color: "#B8862D",
-                                  fontSize: "10px", fontWeight: 600, padding: "1px 8px",
-                                  borderRadius: "10px", whiteSpace: "nowrap",
-                                }}>{item.date}</span>
-                              )}
-                              <span style={{ fontSize: "13px", fontWeight: 700, color: NL.greenDark }}>{item.headline}</span>
-                            </div>
-                            <p style={{ fontSize: "11.5px", lineHeight: 1.8, color: NL.text, margin: 0 }}>{item.body}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </SectionCard>
-
-                    {/* Right Column: Schedule + Notices */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                      {/* Schedule */}
-                      <SectionCard title={kaiho.sections.nextSchedule.title} color="#3A7FA8" bgColor={NL.blueLight} maxH={220}>
-                        {kaiho.sections.nextSchedule.items.map((item, i) => (
+                  {/* ===== MAIN CONTENT - fills remaining space ===== */}
+                  <div style={{
+                    flex: 1,
+                    display: "grid",
+                    gridTemplateColumns: "1.15fr 0.85fr",
+                    gap: "14px",
+                    padding: "12px 24px 0",
+                    minHeight: 0,
+                  }}>
+                    {/* ===== LEFT: Activity Report ===== */}
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div style={{
+                        background: NL.greenLight, borderRadius: "10px 10px 0 0",
+                        padding: "7px 14px", display: "flex", alignItems: "center", gap: "8px",
+                        borderBottom: `2px solid ${NL.green}`, flexShrink: 0,
+                      }}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M3 13 Q5 4 13 2 Q9 7 7 13Z" fill={NL.green} opacity="0.6" />
+                          <circle cx="12" cy="4" r="2" fill={NL.orange} opacity="0.5" />
+                        </svg>
+                        <h3 style={{ fontSize: "15px", fontWeight: 700, color: NL.greenDark, margin: 0 }}>
+                          {kaiho.sections.activityReport.title}
+                        </h3>
+                      </div>
+                      <div style={{
+                        flex: 1,
+                        background: NL.cardBg, borderRadius: "0 0 10px 10px",
+                        border: `1px solid ${NL.border}`, borderTop: "none",
+                        padding: "10px 12px",
+                        display: "flex", flexDirection: "column",
+                      }}>
+                        {kaiho.sections.activityReport.items.map((item, i) => (
                           <div key={i} style={{
-                            display: "flex", alignItems: "baseline", gap: "8px",
-                            marginBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? "7px" : 0,
-                            paddingBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? "7px" : 0,
-                            borderBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? `1px dotted ${NL.border}` : "none",
+                            flex: 1,
+                            marginBottom: i < kaiho.sections.activityReport.items.length - 1 ? "8px" : 0,
+                            paddingBottom: i < kaiho.sections.activityReport.items.length - 1 ? "8px" : 0,
+                            borderBottom: i < kaiho.sections.activityReport.items.length - 1 ? `1.5px dashed ${NL.border}` : "none",
+                            display: "flex", flexDirection: "column",
                           }}>
-                            <span style={{
-                              background: NL.blueLight, color: "#3A7FA8",
-                              fontSize: "10px", fontWeight: 700, padding: "1px 8px",
-                              borderRadius: "8px", whiteSpace: "nowrap", flexShrink: 0,
-                            }}>{item.date}</span>
-                            <div>
-                              <span style={{ fontSize: "12px", fontWeight: 600, color: NL.text }}>{item.event}</span>
-                              {item.description && (
-                                <p style={{ fontSize: "10px", color: NL.textSub, margin: "1px 0 0" }}>{item.description}</p>
+                            {/* Date badge + Headline */}
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexShrink: 0 }}>
+                              <span style={{
+                                background: NL.green, color: "#fff",
+                                fontSize: "11px", fontWeight: 700, padding: "2px 10px",
+                                borderRadius: "10px", whiteSpace: "nowrap",
+                              }}>{item.date}</span>
+                              <span style={{ fontSize: "14px", fontWeight: 700, color: NL.greenDark }}>{item.headline}</span>
+                            </div>
+
+                            {/* Photo or Illustration */}
+                            <div style={{
+                              flex: 1, minHeight: "80px", maxHeight: "130px",
+                              borderRadius: "8px", overflow: "hidden",
+                              border: photos[i] ? `1.5px solid ${NL.border}` : "none",
+                              marginBottom: "6px",
+                            }}>
+                              {photos[i] ? (
+                                <img src={photos[i]} alt="" style={{
+                                  width: "100%", height: "100%", objectFit: "cover", display: "block",
+                                }} />
+                              ) : (
+                                <ActivityIllustration index={i} />
                               )}
                             </div>
+
+                            {/* Body */}
+                            <p style={{ fontSize: "12px", lineHeight: 1.7, color: NL.text, margin: 0, flexShrink: 0 }}>{item.body}</p>
                           </div>
                         ))}
-                      </SectionCard>
+                      </div>
+                    </div>
+
+                    {/* ===== RIGHT: Schedule + Notices ===== */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      {/* Schedule */}
+                      <div style={{ flexShrink: 0 }}>
+                        <div style={{
+                          background: NL.blueLight, borderRadius: "10px 10px 0 0",
+                          padding: "7px 14px", display: "flex", alignItems: "center", gap: "8px",
+                          borderBottom: `2px solid ${NL.blue}`,
+                        }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke={NL.blue} strokeWidth="1.3" />
+                            <line x1="4.5" y1="1" x2="4.5" y2="4.5" stroke={NL.blue} strokeWidth="1.3" strokeLinecap="round" />
+                            <line x1="9.5" y1="1" x2="9.5" y2="4.5" stroke={NL.blue} strokeWidth="1.3" strokeLinecap="round" />
+                          </svg>
+                          <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#3A7FA8", margin: 0 }}>
+                            {kaiho.sections.nextSchedule.title}
+                          </h3>
+                        </div>
+                        <div style={{
+                          background: NL.cardBg, borderRadius: "0 0 10px 10px",
+                          border: `1px solid ${NL.border}`, borderTop: "none",
+                          padding: "10px 12px",
+                        }}>
+                          {kaiho.sections.nextSchedule.items.map((item, i) => (
+                            <div key={i} style={{
+                              display: "flex", alignItems: "center", gap: "8px",
+                              marginBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? "10px" : 0,
+                              paddingBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? "10px" : 0,
+                              borderBottom: i < kaiho.sections.nextSchedule.items.length - 1 ? `1px dotted ${NL.border}` : "none",
+                            }}>
+                              <span style={{
+                                background: NL.blueLight, color: "#3A7FA8",
+                                fontSize: "12px", fontWeight: 700, padding: "3px 10px",
+                                borderRadius: "8px", whiteSpace: "nowrap", flexShrink: 0,
+                              }}>{item.date}</span>
+                              <span style={{ fontSize: "13px", fontWeight: 600, color: NL.text }}>{item.event}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
                       {/* Notices */}
                       {kaiho.sections.notices.items.length > 0 && (
-                        <SectionCard title={kaiho.sections.notices.title} color="#B8862D" bgColor={NL.orangeLight} maxH={200}>
-                          {kaiho.sections.notices.items.map((item, i) => (
-                            <div key={i} style={{
-                              display: "flex", alignItems: "flex-start", gap: "6px",
-                              marginBottom: i < kaiho.sections.notices.items.length - 1 ? "6px" : 0,
-                            }}>
-                              <span style={{ color: NL.orange, fontSize: "10px", lineHeight: 1.6, flexShrink: 0 }}>●</span>
-                              <p style={{ fontSize: "12px", lineHeight: 1.7, color: NL.text, margin: 0 }}>{item}</p>
-                            </div>
-                          ))}
-                        </SectionCard>
+                        <div style={{ flex: 1 }}>
+                          <div style={{
+                            background: NL.orangeLight, borderRadius: "10px 10px 0 0",
+                            padding: "7px 14px", display: "flex", alignItems: "center", gap: "8px",
+                            borderBottom: `2px solid ${NL.orange}`,
+                          }}>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                              <path d="M7 1.5 L13 11.5 H1 Z" stroke="#B8862D" strokeWidth="1.3" fill="none" strokeLinejoin="round" />
+                              <line x1="7" y1="5.5" x2="7" y2="8" stroke="#B8862D" strokeWidth="1.3" strokeLinecap="round" />
+                              <circle cx="7" cy="9.5" r="0.7" fill="#B8862D" />
+                            </svg>
+                            <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#B8862D", margin: 0 }}>
+                              {kaiho.sections.notices.title}
+                            </h3>
+                          </div>
+                          <div style={{
+                            background: NL.cardBg, borderRadius: "0 0 10px 10px",
+                            border: `1px solid ${NL.border}`, borderTop: "none",
+                            padding: "10px 12px",
+                          }}>
+                            {kaiho.sections.notices.items.map((item, i) => (
+                              <div key={i} style={{
+                                display: "flex", alignItems: "flex-start", gap: "6px",
+                                marginBottom: i < kaiho.sections.notices.items.length - 1 ? "10px" : 0,
+                              }}>
+                                <span style={{ color: NL.orange, fontSize: "11px", lineHeight: 1.8, flexShrink: 0 }}>●</span>
+                                <p style={{ fontSize: "12px", lineHeight: 1.8, color: NL.text, margin: 0 }}>{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
 
-                  {/* ===== BOTTOM AREA ===== */}
-                  <div style={{ padding: "12px 28px 0" }}>
-                    {/* Member Voices */}
-                    {kaiho.sections.memberVoices.items.length > 0 && (
-                      <div style={{ marginBottom: "12px" }}>
-                        <SectionCard title={kaiho.sections.memberVoices.title} color="#C25A7C" bgColor={NL.pinkLight} maxH={130}>
-                          <div style={{
-                            display: "grid",
-                            gridTemplateColumns: kaiho.sections.memberVoices.items.length === 1 ? "1fr" : "1fr 1fr",
-                            gap: "8px",
-                          }}>
-                            {kaiho.sections.memberVoices.items.map((v, i) => (
-                              <div key={i} style={{
-                                background: "#FFF9FB", borderRadius: "8px",
-                                padding: "8px 12px", border: `1px solid #F5DCE5`,
-                              }}>
-                                <span style={{ fontSize: "11px", fontWeight: 700, color: "#C25A7C" }}>{v.name}</span>
-                                <p style={{ fontSize: "11px", lineHeight: 1.7, color: NL.text, margin: "2px 0 0" }}>
-                                  「{v.comment}」
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </SectionCard>
-                      </div>
-                    )}
-
-                    {/* Editor Note + Editor Name */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "12px", alignItems: "stretch" }}>
+                  {/* ===== MEMBER VOICES ===== */}
+                  {kaiho.sections.memberVoices.items.length > 0 && (
+                    <div style={{ padding: "12px 24px 0", flexShrink: 0 }}>
                       <div style={{
-                        background: NL.cream, borderRadius: "10px",
-                        border: `1px solid ${NL.border}`, padding: "10px 14px",
+                        background: NL.pinkLight, borderRadius: "10px 10px 0 0",
+                        padding: "7px 14px", display: "flex", alignItems: "center", gap: "8px",
+                        borderBottom: `2px solid ${NL.pink}`,
+                      }}>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <circle cx="7" cy="4.5" r="3" stroke="#C25A7C" strokeWidth="1.2" fill="none" />
+                          <path d="M2 12.5 Q2 9 7 9 Q12 9 12 12.5" stroke="#C25A7C" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+                        </svg>
+                        <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#C25A7C", margin: 0 }}>
+                          {kaiho.sections.memberVoices.title}
+                        </h3>
+                      </div>
+                      <div style={{
+                        background: NL.cardBg, borderRadius: "0 0 10px 10px",
+                        border: `1px solid ${NL.border}`, borderTop: "none",
+                        padding: "16px 14px",
                       }}>
                         <div style={{
-                          fontSize: "12px", fontWeight: 700, color: NL.greenDark,
-                          marginBottom: "5px", borderBottom: `2px solid ${NL.greenLight}`,
-                          paddingBottom: "3px", display: "inline-block", letterSpacing: "2px",
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${Math.min(kaiho.sections.memberVoices.items.length, 4)}, 1fr)`,
+                          gap: "14px",
                         }}>
-                          {kaiho.sections.editorNote.title}
+                          {kaiho.sections.memberVoices.items.map((v, i) => (
+                            <div key={i} style={{ textAlign: "center" }}>
+                              {/* Large Avatar */}
+                              <div style={{
+                                width: "68px", height: "68px", borderRadius: "50%",
+                                background: `linear-gradient(135deg, ${AVATAR_COLORS[i % AVATAR_COLORS.length]}, ${AVATAR_COLORS[i % AVATAR_COLORS.length]}CC)`,
+                                margin: "0 auto 8px",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                border: `3px solid #fff`,
+                                boxShadow: `0 0 0 2px ${AVATAR_COLORS[i % AVATAR_COLORS.length]}50, 0 3px 8px rgba(0,0,0,0.12)`,
+                              }}>
+                                <span style={{ fontSize: "26px", fontWeight: 700, color: "#fff" }}>
+                                  {v.name.charAt(0)}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: "14px", fontWeight: 700, color: NL.text, marginBottom: "6px" }}>
+                                {v.name}
+                              </div>
+                              {/* Speech bubble */}
+                              <div style={{
+                                position: "relative",
+                                background: "#FFF9FB", borderRadius: "10px",
+                                padding: "10px 12px", border: "1px solid #F5DCE5",
+                                fontSize: "12px", lineHeight: 1.7, color: NL.text, textAlign: "left",
+                              }}>
+                                {/* Bubble arrow */}
+                                <div style={{
+                                  position: "absolute", top: "-6px", left: "50%", transform: "translateX(-50%)",
+                                  width: 0, height: 0,
+                                  borderLeft: "6px solid transparent",
+                                  borderRight: "6px solid transparent",
+                                  borderBottom: "6px solid #FFF9FB",
+                                }} />
+                                <div style={{
+                                  position: "absolute", top: "-7px", left: "50%", transform: "translateX(-50%)",
+                                  width: 0, height: 0,
+                                  borderLeft: "7px solid transparent",
+                                  borderRight: "7px solid transparent",
+                                  borderBottom: "7px solid #F5DCE5",
+                                  zIndex: -1,
+                                }} />
+                                「{v.comment}」
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <p style={{
-                          fontSize: "11px", lineHeight: 1.8, color: NL.text, margin: 0,
-                          maxHeight: "54px", overflow: "hidden",
-                        }}>
-                          {kaiho.sections.editorNote.body}
-                        </p>
                       </div>
-                      <div style={{
-                        background: NL.cardBg, borderRadius: "10px",
-                        border: `1px solid ${NL.border}`, padding: "10px 20px",
-                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        minWidth: "120px",
-                      }}>
-                        <div style={{ fontSize: "9px", color: NL.textSub, letterSpacing: "2px", marginBottom: "4px" }}>
-                          {kaiho.sections.editor.title}
-                        </div>
-                        <div style={{ fontSize: "16px", fontWeight: 700, color: NL.greenDark }}>
-                          {kaiho.sections.editor.name}
-                        </div>
+                    </div>
+                  )}
+
+                  {/* ===== FOOTER ===== */}
+                  <div style={{
+                    padding: "10px 24px 16px",
+                    flexShrink: 0,
+                    display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+                    gap: "16px",
+                  }}>
+                    <p style={{
+                      fontSize: "11px", lineHeight: 1.7, color: NL.textSub, margin: 0,
+                      flex: 1,
+                    }}>
+                      {kaiho.sections.editorNote.body}
+                    </p>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div style={{ fontSize: "10px", color: NL.textSub, letterSpacing: "1px" }}>
+                        {kaiho.sections.editor.title}
+                      </div>
+                      <div style={{ fontSize: "20px", fontWeight: 700, color: NL.greenDark }}>
+                        {kaiho.sections.editor.name}
                       </div>
                     </div>
                   </div>
 
-                  {/* Club info footer */}
+                  {/* Club info bar */}
                   <div style={{
-                    position: "absolute", bottom: "16px", left: 0, right: 0,
-                    textAlign: "center", fontSize: "9px", color: NL.textSub, letterSpacing: "1px",
+                    textAlign: "center", fontSize: "10px", color: NL.textSub,
+                    letterSpacing: "1px", padding: "6px 24px",
+                    borderTop: `1px solid ${NL.border}`, flexShrink: 0,
+                    background: `${NL.greenLight}66`,
                   }}>
                     発行：{kaiho.clubName} / {kaiho.publishDate}
                   </div>
