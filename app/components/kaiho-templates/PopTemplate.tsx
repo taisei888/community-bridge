@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { TemplateProps } from "./types";
 import { SeasonDecoration } from "./SeasonDecorations";
+import { IllustrationPlaceholder } from "./IllustrationPlaceholder";
 
 const c = (v: string) => `var(${v})`;
 
@@ -23,17 +24,15 @@ const DateBadge = ({ date }: { date: string }) => (
   }}>{date}</span>
 );
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: CSSProperties }) => {
-  if (!photo) return null;
-  return (
-    <div style={{
-      borderRadius: "10px", overflow: "hidden", background: "#f0f0f0",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      ...style,
-    }}>
-      <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    </div>
-  );
+const PhotoOrPlaceholder = ({ photo, hint, style }: { photo?: string; hint?: string; index: number; style?: CSSProperties }) => {
+  if (photo) {
+    return (
+      <div style={{ borderRadius: "10px", overflow: "hidden", ...style }}>
+        <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
+  return <IllustrationPlaceholder hint={hint} style={style} />;
 };
 
 /* ===== Variant 1: カード並列型 ===== */
@@ -76,7 +75,7 @@ function PopVariant1({ data, photos }: TemplateProps) {
                 <DateBadge date={item.date} />
                 <span style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</span>
               </div>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "140px", marginBottom: "6px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ height: "140px", marginBottom: "6px" }} />
               <p style={{ fontSize: "11px", lineHeight: 1.7, color: c("--c-text"), margin: 0 }}>{item.body}</p>
             </div>
           ))}
@@ -184,7 +183,7 @@ function PopVariant2({ data, photos }: TemplateProps) {
             gap: "12px", background: "#fff", borderRadius: "12px", padding: "10px",
             border: `1.5px solid color-mix(in srgb, ${c("--c-main")} 15%, white)`,
           }}>
-            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "120px", height: "80px", flexShrink: 0 }} />
+            <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "120px", height: "80px", flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
                 <DateBadge date={item.date} />
@@ -281,7 +280,7 @@ function PopVariant3({ data, photos }: TemplateProps) {
             <div key={i} style={{ background: "#fff", borderRadius: "10px", padding: "8px", border: `1.5px solid color-mix(in srgb, ${c("--c-main")} 20%, white)` }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main"), marginBottom: "3px" }}>{item.date}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "4px" }}>{item.headline}</div>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ height: "100px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ height: "100px", marginBottom: "4px" }} />
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{item.body}</p>
             </div>
           ))}

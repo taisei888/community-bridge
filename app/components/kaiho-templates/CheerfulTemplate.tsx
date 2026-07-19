@@ -1,15 +1,18 @@
 import type { TemplateProps } from "./types";
 import { SeasonDecoration } from "./SeasonDecorations";
+import { IllustrationPlaceholder } from "./IllustrationPlaceholder";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
-  if (!photo) return null;
-  return (
-    <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f5f5f5", ...style }}>
-      <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    </div>
-  );
+const PhotoOrPlaceholder = ({ photo, hint, style }: { photo?: string; hint?: string; index: number; style?: React.CSSProperties }) => {
+  if (photo) {
+    return (
+      <div style={{ borderRadius: "12px", overflow: "hidden", ...style }}>
+        <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
+  return <IllustrationPlaceholder hint={hint} style={style} />;
 };
 
 /* ===== Variant 1: メインビジュアル大型 ===== */
@@ -22,7 +25,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
       {/* Header with large visual */}
       <div style={{ position: "relative", marginBottom: "12px" }}>
         {/* Main visual - large */}
-        <PhotoOrPlaceholder photo={photos[0]} index={0} style={{ width: "100%", height: "200px" }} />
+        <PhotoOrPlaceholder photo={photos[0]} hint={data.title} index={0} style={{ width: "100%", height: "200px" }} />
         {/* Title overlay on bottom */}
         <div style={{
           position: "absolute", bottom: "0", left: "0", right: "0",
@@ -141,7 +144,7 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
         {sec.activityReport.items.map((item, i) => (
           <div key={i} style={{ background: "#fff", borderRadius: "12px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "100px", borderRadius: "0" }} />
+            <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "100px", borderRadius: "0" }} />
             <div style={{ padding: "8px 10px" }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "3px" }}>{item.headline}</div>
@@ -232,7 +235,7 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
             boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
             transform: `rotate(${i % 2 === 0 ? "-1" : "1"}deg)`,
           }}>
-            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "120px", marginBottom: "6px" }} />
+            <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "120px", marginBottom: "6px" }} />
             <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-main") }}>{item.date}</div>
             <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
             <p style={{ fontSize: "10px", lineHeight: 1.5, color: c("--c-text"), margin: "3px 0 0", opacity: 0.8 }}>{item.body}</p>

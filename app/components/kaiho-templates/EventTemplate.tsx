@@ -1,15 +1,18 @@
 import type { TemplateProps } from "./types";
 import { SeasonDecoration } from "./SeasonDecorations";
+import { IllustrationPlaceholder } from "./IllustrationPlaceholder";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
-  if (!photo) return null;
-  return (
-    <div style={{ borderRadius: "10px", overflow: "hidden", background: "#eee", ...style }}>
-      <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    </div>
-  );
+const PhotoOrPlaceholder = ({ photo, hint, style }: { photo?: string; hint?: string; index: number; style?: React.CSSProperties }) => {
+  if (photo) {
+    return (
+      <div style={{ borderRadius: "10px", overflow: "hidden", ...style }}>
+        <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
+  return <IllustrationPlaceholder hint={hint} style={style} />;
 };
 
 /* ===== Variant 1: ポスター風 ===== */
@@ -73,7 +76,7 @@ function EventVariant1({ data, photos }: TemplateProps) {
           <h3 style={{ fontSize: "12px", fontWeight: 700, color: c("--c-sub"), margin: "0 0 6px" }}>{sec.activityReport.title}</h3>
           {sec.activityReport.items.map((item, i) => (
             <div key={i} style={{ marginBottom: "8px" }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "110px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "110px", marginBottom: "4px" }} />
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-text") }}>{item.date} {item.headline}</div>
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: "2px 0 0", opacity: 0.8 }}>{item.body}</p>
             </div>
@@ -169,7 +172,7 @@ function EventVariant2({ data, photos }: TemplateProps) {
         <div style={{ display: "flex", gap: "10px", overflow: "hidden" }}>
           {sec.activityReport.items.map((item, i) => (
             <div key={i} style={{ flex: 1, background: "#fff", borderRadius: "10px", padding: "8px", border: `1px solid color-mix(in srgb, ${c("--c-sub")} 15%, white)` }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "100px", marginBottom: "4px" }} />
+              <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "100px", marginBottom: "4px" }} />
               <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-sub") }}>{item.date}</div>
               <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-text") }}>{item.headline}</div>
               <p style={{ fontSize: "9px", lineHeight: 1.5, color: c("--c-text"), margin: "2px 0 0" }}>{item.body}</p>
@@ -258,7 +261,7 @@ function EventVariant3({ data, photos }: TemplateProps) {
             <h3 style={{ fontSize: "13px", fontWeight: 800, color: c("--c-sub"), margin: "0 0 6px" }}>{sec.activityReport.title}</h3>
             {sec.activityReport.items.map((item, i) => (
               <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
-                <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "80px", height: "60px", flexShrink: 0 }} />
+                <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "80px", height: "60px", flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: "10px", fontWeight: 700, color: c("--c-sub") }}>{item.date} {item.headline}</div>
                   <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: "2px 0 0" }}>{item.body}</p>

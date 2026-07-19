@@ -1,15 +1,18 @@
 import type { TemplateProps } from "./types";
 import { SeasonDecoration } from "./SeasonDecorations";
+import { IllustrationPlaceholder } from "./IllustrationPlaceholder";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
-  if (!photo) return null;
-  return (
-    <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f5f5f5", ...style }}>
-      <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    </div>
-  );
+const PhotoOrPlaceholder = ({ photo, hint, style }: { photo?: string; hint?: string; index: number; style?: React.CSSProperties }) => {
+  if (photo) {
+    return (
+      <div style={{ borderRadius: "12px", overflow: "hidden", ...style }}>
+        <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
+  return <IllustrationPlaceholder hint={hint} style={style} />;
 };
 
 /* ===== Variant 1: ゆったりカード型 ===== */
@@ -36,7 +39,7 @@ function SimplePopVariant1({ data, photos }: TemplateProps) {
             padding: "12px", background: "#fff", borderRadius: "14px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           }}>
-            <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "110px", height: "80px", flexShrink: 0 }} />
+            <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "110px", height: "80px", flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                 <span style={{ background: c("--c-main"), color: "#fff", fontSize: "11px", fontWeight: 700, padding: "2px 10px", borderRadius: "8px" }}>{item.date}</span>
@@ -137,7 +140,7 @@ function SimplePopVariant2({ data, photos }: TemplateProps) {
               background: i % 2 === 0 ? `color-mix(in srgb, ${c("--c-main")} 4%, white)` : "#fff",
               borderRadius: "10px",
             }}>
-              <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "70px", height: "50px", flexShrink: 0 }} />
+              <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "70px", height: "50px", flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: c("--c-text"), marginBottom: "2px" }}>
                   <span style={{ color: c("--c-main"), marginRight: "6px" }}>{item.date}</span>{item.headline}
@@ -228,7 +231,7 @@ function SimplePopVariant3({ data, photos }: TemplateProps) {
           <div style={{ display: "flex", gap: "12px" }}>
             {sec.activityReport.items.map((item, i) => (
               <div key={i} style={{ flex: 1 }}>
-                <PhotoOrPlaceholder photo={photos[i]} index={i} style={{ width: "100%", height: "110px", marginBottom: "6px" }} />
+                <PhotoOrPlaceholder photo={photos[i]} hint={item.headline} index={i} style={{ width: "100%", height: "110px", marginBottom: "6px" }} />
                 <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-main"), marginBottom: "2px" }}>{item.date}</div>
                 <div style={{ fontSize: "12px", fontWeight: 700, color: c("--c-text"), marginBottom: "3px" }}>{item.headline}</div>
                 <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{item.body}</p>
