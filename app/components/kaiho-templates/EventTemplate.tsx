@@ -3,22 +3,14 @@ import { SeasonDecoration } from "./SeasonDecorations";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => (
-  <div style={{ borderRadius: "10px", overflow: "hidden", background: "#eee", ...style }}>
-    {photo ? (
+const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
+  if (!photo) return null;
+  return (
+    <div style={{ borderRadius: "10px", overflow: "hidden", background: "#eee", ...style }}>
       <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    ) : (
-      <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, color-mix(in srgb, ${c("--c-main")} 10%, white), color-mix(in srgb, ${c("--c-sub")} 8%, white))`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" opacity="0.3">
-          <rect x="4" y="6" width="28" height="24" rx="3" stroke={c("--c-main")} strokeWidth="2" fill="none" />
-          <line x1="4" y1="12" x2="32" y2="12" stroke={c("--c-main")} strokeWidth="1.5" />
-          <line x1="12" y1="6" x2="12" y2="3" stroke={c("--c-main")} strokeWidth="2" strokeLinecap="round" />
-          <line x1="24" y1="6" x2="24" y2="3" stroke={c("--c-main")} strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 /* ===== Variant 1: ポスター風 ===== */
 function EventVariant1({ data, photos }: TemplateProps) {
@@ -26,7 +18,7 @@ function EventVariant1({ data, photos }: TemplateProps) {
   const mainEvent = sec.nextSchedule.items[0];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Big event header - poster style */}
@@ -134,7 +126,7 @@ function EventVariant1({ data, photos }: TemplateProps) {
 function EventVariant2({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header */}
@@ -230,7 +222,7 @@ function EventVariant2({ data, photos }: TemplateProps) {
 function EventVariant3({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header */}

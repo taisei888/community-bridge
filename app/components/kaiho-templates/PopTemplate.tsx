@@ -23,35 +23,24 @@ const DateBadge = ({ date }: { date: string }) => (
   }}>{date}</span>
 );
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: CSSProperties }) => (
-  <div style={{
-    borderRadius: "10px", overflow: "hidden", background: "#f0f0f0",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    ...style,
-  }}>
-    {photo ? (
+const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: CSSProperties }) => {
+  if (!photo) return null;
+  return (
+    <div style={{
+      borderRadius: "10px", overflow: "hidden", background: "#f0f0f0",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      ...style,
+    }}>
       <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    ) : (
-      <div style={{
-        width: "100%", height: "100%",
-        background: `linear-gradient(135deg, color-mix(in srgb, ${c("--c-main")} 15%, white), color-mix(in srgb, ${c("--c-sub")} 15%, white))`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity="0.4">
-          <rect x="5" y="8" width="30" height="24" rx="3" stroke={c("--c-main")} strokeWidth="2" fill="none" />
-          <circle cx="14" cy="17" r="3" fill={c("--c-main")} opacity="0.5" />
-          <path d="M8 28 L16 20 L22 26 L28 18 L32 24 V28 H8Z" fill={c("--c-main")} opacity="0.3" />
-        </svg>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 /* ===== Variant 1: カード並列型 ===== */
 function PopVariant1({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header */}
@@ -152,7 +141,7 @@ function PopVariant1({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: `1.5px solid color-mix(in srgb, ${c("--c-main")} 15%, white)` }}>
+      <div style={{ marginTop: "12px", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: `1.5px solid color-mix(in srgb, ${c("--c-main")} 15%, white)` }}>
         <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), opacity: 0.6, margin: 0, maxWidth: "65%" }}>{sec.editorNote.body}</p>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: "9px", color: c("--c-text"), opacity: 0.5 }}>{sec.editor.title}</div>
@@ -167,7 +156,7 @@ function PopVariant1({ data, photos }: TemplateProps) {
 function PopVariant2({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header - ribbon style */}
@@ -251,7 +240,7 @@ function PopVariant2({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "8px", fontSize: "10px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "10px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
         <span>{sec.editorNote.body}</span>
         <span>{sec.editor.name} / {data.clubName}</span>
       </div>
@@ -263,7 +252,7 @@ function PopVariant2({ data, photos }: TemplateProps) {
 function PopVariant3({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px", background: `linear-gradient(180deg, ${c("--c-bg")}, color-mix(in srgb, ${c("--c-main")} 5%, white))` }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px", background: `linear-gradient(180deg, ${c("--c-bg")}, color-mix(in srgb, ${c("--c-main")} 5%, white))` }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header - big bold */}

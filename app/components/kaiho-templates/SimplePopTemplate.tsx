@@ -3,26 +3,20 @@ import { SeasonDecoration } from "./SeasonDecorations";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => (
-  <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f5f5f5", ...style }}>
-    {photo ? (
+const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
+  if (!photo) return null;
+  return (
+    <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f5f5f5", ...style }}>
       <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    ) : (
-      <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, color-mix(in srgb, ${c("--c-main")} 8%, white), color-mix(in srgb, ${c("--c-sub")} 6%, white))`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" opacity="0.25">
-          <circle cx="16" cy="12" r="6" fill={c("--c-main")} />
-          <path d="M6 28 Q6 22 16 22 Q26 22 26 28" fill={c("--c-main")} opacity="0.4" />
-        </svg>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 /* ===== Variant 1: ゆったりカード型 ===== */
 function SimplePopVariant1({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "24px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "24px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Simple clean header */}
@@ -101,7 +95,7 @@ function SimplePopVariant1({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "10px", borderTop: `1.5px solid color-mix(in srgb, ${c("--c-main")} 12%, white)`, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <div style={{ marginTop: "12px", paddingTop: "10px", borderTop: `1.5px solid color-mix(in srgb, ${c("--c-main")} 12%, white)`, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <p style={{ fontSize: "10px", lineHeight: 1.5, color: c("--c-text"), opacity: 0.5, margin: 0, maxWidth: "60%" }}>{sec.editorNote.body}</p>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: "9px", color: c("--c-text"), opacity: 0.4 }}>{sec.editor.title}</div>
@@ -116,7 +110,7 @@ function SimplePopVariant1({ data, photos }: TemplateProps) {
 function SimplePopVariant2({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "22px 26px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "22px 26px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header with colored bar */}
@@ -200,7 +194,7 @@ function SimplePopVariant2({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
         <span>{sec.editorNote.body}</span>
         <span>{sec.editor.name} / {data.clubName}</span>
       </div>
@@ -212,7 +206,7 @@ function SimplePopVariant2({ data, photos }: TemplateProps) {
 function SimplePopVariant3({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header - centered with decorative line */}

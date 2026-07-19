@@ -3,23 +3,20 @@ import { SeasonDecoration } from "./SeasonDecorations";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => (
-  <div style={{ borderRadius: "4px", overflow: "hidden", background: "#eee", ...style }}>
-    {photo ? (
+const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
+  if (!photo) return null;
+  return (
+    <div style={{ borderRadius: "4px", overflow: "hidden", background: "#eee", ...style }}>
       <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    ) : (
-      <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, color-mix(in srgb, ${c("--c-main")} 8%, white), color-mix(in srgb, ${c("--c-sub")} 8%, white))`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontSize: "10px", color: c("--c-main"), opacity: 0.4 }}>PHOTO</span>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 /* ===== Variant 1: 2段組み新聞風 ===== */
 function MagazineVariant1({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "24px 28px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "24px 28px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Newspaper-style header */}
@@ -94,7 +91,7 @@ function MagazineVariant1({ data, photos }: TemplateProps) {
 
           {/* Extra box */}
           {sec.extraBox && sec.extraBox.title && (
-            <div style={{ marginTop: "auto", background: `color-mix(in srgb, ${c("--c-sub")} 8%, white)`, padding: "10px", borderRadius: "4px", border: `1px solid color-mix(in srgb, ${c("--c-sub")} 20%, white)` }}>
+            <div style={{ marginTop: "8px", background: `color-mix(in srgb, ${c("--c-sub")} 8%, white)`, padding: "10px", borderRadius: "4px", border: `1px solid color-mix(in srgb, ${c("--c-sub")} 20%, white)` }}>
               <div style={{ fontSize: "11px", fontWeight: 700, color: c("--c-sub"), marginBottom: "4px" }}>{sec.extraBox.title}</div>
               <p style={{ fontSize: "10px", lineHeight: 1.6, color: c("--c-text"), margin: 0 }}>{sec.extraBox.body}</p>
             </div>
@@ -115,7 +112,7 @@ function MagazineVariant1({ data, photos }: TemplateProps) {
 function MagazineVariant2({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px 24px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px 24px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header - horizontal rule style */}
@@ -207,7 +204,7 @@ function MagazineVariant2({ data, photos }: TemplateProps) {
 function MagazineVariant3({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Magazine-style header with large feature */}

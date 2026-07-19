@@ -3,35 +3,20 @@ import { SeasonDecoration } from "./SeasonDecorations";
 
 const c = (v: string) => `var(${v})`;
 
-const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => (
-  <div style={{
-    borderRadius: "12px", overflow: "hidden", background: "#f5f5f5",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    ...style,
-  }}>
-    {photo ? (
+const PhotoOrPlaceholder = ({ photo, index, style }: { photo?: string; index: number; style?: React.CSSProperties }) => {
+  if (!photo) return null;
+  return (
+    <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f5f5f5", ...style }}>
       <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    ) : (
-      <div style={{
-        width: "100%", height: "100%",
-        background: `linear-gradient(135deg, color-mix(in srgb, ${c("--c-main")} 10%, white), color-mix(in srgb, ${c("--c-sub")} 10%, white))`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity="0.3">
-          <circle cx="24" cy="16" r="8" fill={c("--c-main")} />
-          <path d="M10 42 Q10 30 24 30 Q38 30 38 42" fill={c("--c-main")} opacity="0.5" />
-          <circle cx="38" cy="12" r="4" fill={c("--c-sub")} />
-        </svg>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 /* ===== Variant 1: メインビジュアル大型 ===== */
 function CheerfulVariant1({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header with large visual */}
@@ -125,7 +110,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
         {sec.editorNote.body} ／ {sec.editor.title}：{sec.editor.name} ／ {data.clubName}
       </div>
     </div>
@@ -136,7 +121,7 @@ function CheerfulVariant1({ data, photos }: TemplateProps) {
 function CheerfulVariant2({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "18px" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "18px" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Compact header */}
@@ -214,7 +199,7 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, display: "flex", justifyContent: "space-between" }}>
         <span>{sec.editorNote.body}</span>
         <span>{sec.editor.name} / {data.clubName}</span>
       </div>
@@ -226,7 +211,7 @@ function CheerfulVariant2({ data, photos }: TemplateProps) {
 function CheerfulVariant3({ data, photos }: TemplateProps) {
   const sec = data.sections;
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "16px", position: "relative" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "16px", position: "relative" }}>
       <SeasonDecoration season={data.seasonTheme} />
 
       {/* Header - playful angle */}
@@ -300,7 +285,7 @@ function CheerfulVariant3({ data, photos }: TemplateProps) {
       )}
 
       {/* Footer */}
-      <div style={{ marginTop: "auto", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
+      <div style={{ marginTop: "12px", paddingTop: "8px", fontSize: "9px", color: c("--c-text"), opacity: 0.5, textAlign: "center" }}>
         {sec.editorNote.body} ／ {sec.editor.name} ／ {data.clubName}
       </div>
     </div>
