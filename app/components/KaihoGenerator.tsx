@@ -3,22 +3,32 @@
 import { useState, useRef, type CSSProperties } from "react";
 
 /* ===== Types ===== */
-type ActivityItem = { date: string; headline: string; body: string; photoSuggestion?: string; iconSuggestion?: string };
-type ScheduleItem = { date: string; event: string; description?: string };
-type MemberVoice = { name: string; comment: string };
+type PhotoSlot = { type: string; useUploadedPhoto?: boolean; illustrationPrompt?: string; altText?: string };
+type ActivityItem = { date: string; headline: string; body: string; photoSlot?: PhotoSlot; photoSuggestion?: string; iconSuggestion?: string };
+type ScheduleItem = { date: string; event: string; description?: string; iconPrompt?: string };
+type NoticeItem = { headline: string; body: string; iconPrompt?: string };
+type MemberVoice = { name: string; comment: string; avatarPrompt?: string };
+type ExtraBox = { title: string; body: string; iconPrompt?: string } | null;
 type KaihoData = {
   title: string;
   subtitle: string;
   issueLabel: string;
   publishDate: string;
   clubName: string;
-  themeColor: { main: string; sub: string; accent: string; background: string };
+  layoutPattern?: string;
+  layoutVariant?: string | number;
+  seasonTheme?: string;
+  themeColor: { main: string; sub: string; accent: string; background: string; text?: string };
+  fontDirection?: { titleFont?: string; headingFont?: string; bodyFont?: string; accentFont?: string };
   designDirection: string;
+  mainVisual?: { type?: string; position?: string; imagePrompt?: string; altText?: string };
+  illustrationDirection?: { mainIllustration?: string; smallDecorations?: string[]; sectionIcons?: Record<string, string> };
   sections: {
-    activityReport: { title: string; items: ActivityItem[] };
+    activityReport: { title: string; summaryLead?: string; items: ActivityItem[] };
     nextSchedule: { title: string; items: ScheduleItem[] };
-    notices: { title: string; items: string[] };
+    notices: { title: string; items: NoticeItem[] };
     memberVoices: { title: string; items: MemberVoice[] };
+    extraBox?: ExtraBox;
     editorNote: { title: string; body: string };
     editor: { title: string; name: string };
   };
@@ -164,15 +174,24 @@ export default function KaihoGenerator() {
     if (!form.clubName || !form.issueDate) { setError("クラブ名と発行号は必須です"); return; }
     setError(""); setLoading(true);
     try {
-      const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, hasUploadedPhotos: photos.length > 0, uploadedPhotoDescriptions: photos.length > 0 ? `${photos.length}枚の写真がアップロードされています` : "なし" }) });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "生成失敗"); }
       const data = await res.json();
       const sec = data.sections || {};
+      // Normalize notices: handle both string[] and {headline, body, iconPrompt}[] formats
+      const normalizeNotices = (items: unknown[]): NoticeItem[] => {
+        return items.map((item: unknown) => {
+          if (typeof item === "string") return { headline: "", body: item, iconPrompt: "" };
+          const obj = item as Record<string, string>;
+          return { headline: obj?.headline || "", body: obj?.body || obj?.text || String(item), iconPrompt: obj?.iconPrompt || "" };
+        });
+      };
       data.sections = {
-        activityReport: { title: sec.activityReport?.title || "今月の活動報告", items: Array.isArray(sec.activityReport?.items) ? sec.activityReport.items : [] },
+        activityReport: { title: sec.activityReport?.title || "今月の活動報告", summaryLead: sec.activityReport?.summaryLead || "", items: Array.isArray(sec.activityReport?.items) ? sec.activityReport.items : [] },
         nextSchedule: { title: sec.nextSchedule?.title || "来月の予定", items: Array.isArray(sec.nextSchedule?.items) ? sec.nextSchedule.items : [] },
-        notices: { title: sec.notices?.title || "お知らせ", items: Array.isArray(sec.notices?.items) ? sec.notices.items.map((item: unknown) => typeof item === "string" ? item : (item as Record<string, string>)?.body || (item as Record<string, string>)?.text || String(item)) : [] },
+        notices: { title: sec.notices?.title || "お知らせ・連絡事項", items: Array.isArray(sec.notices?.items) ? normalizeNotices(sec.notices.items) : [] },
         memberVoices: { title: sec.memberVoices?.title || "会員のひとこと", items: Array.isArray(sec.memberVoices?.items) ? sec.memberVoices.items : [] },
+        extraBox: sec.extraBox || null,
         editorNote: { title: sec.editorNote?.title || "編集後記", body: sec.editorNote?.body || "" },
         editor: { title: sec.editor?.title || "編集責任者", name: sec.editor?.name || "" },
       };
@@ -228,7 +247,8 @@ export default function KaihoGenerator() {
       sy += 0.36;
       sec.notices.items.forEach((item) => {
         if (sy > 6.5) return;
-        slide.addText(`\u30FB${item}`, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
+        const noticeText = item.headline ? `\u30FB${item.headline}：${item.body}` : `\u30FB${item.body}`;
+        slide.addText(noticeText, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
         sy += 0.24;
       });
     }
@@ -575,7 +595,10 @@ export default function KaihoGenerator() {
                                 marginBottom: i < kaiho.sections.notices.items.length - 1 ? "10px" : 0,
                               }}>
                                 <span style={{ color: NL.orange, fontSize: "11px", lineHeight: 1.8, flexShrink: 0 }}>●</span>
-                                <p style={{ fontSize: "12px", lineHeight: 1.8, color: NL.text, margin: 0 }}>{item}</p>
+                                <div style={{ margin: 0 }}>
+                                  {item.headline && <span style={{ fontSize: "12px", fontWeight: 700, color: NL.text, lineHeight: 1.8 }}>{item.headline}　</span>}
+                                  <span style={{ fontSize: "12px", lineHeight: 1.8, color: NL.text }}>{item.body}</span>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -656,6 +679,27 @@ export default function KaihoGenerator() {
                             </div>
                           ))}
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ===== EXTRA BOX ===== */}
+                  {kaiho.sections.extraBox && kaiho.sections.extraBox.title && (
+                    <div style={{ padding: "8px 24px 0", flexShrink: 0 }}>
+                      <div style={{
+                        background: `linear-gradient(135deg, ${NL.orangeLight}, ${NL.cream})`,
+                        borderRadius: "10px",
+                        border: `1.5px dashed ${NL.orange}`,
+                        padding: "12px 16px",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="5.5" stroke={NL.orange} strokeWidth="1.2" fill="none" />
+                            <path d="M7 4.5V7.5M7 9V9.5" stroke={NL.orange} strokeWidth="1.2" strokeLinecap="round" />
+                          </svg>
+                          <span style={{ fontSize: "13px", fontWeight: 700, color: "#B8862D" }}>{kaiho.sections.extraBox.title}</span>
+                        </div>
+                        <p style={{ fontSize: "12px", lineHeight: 1.7, color: NL.text, margin: 0 }}>{kaiho.sections.extraBox.body}</p>
                       </div>
                     </div>
                   )}
