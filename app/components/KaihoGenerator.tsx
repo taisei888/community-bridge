@@ -132,86 +132,43 @@ export default function KaihoGenerator() {
     finally { setLoading(false); }
   };
 
+  const capturePreview = async (): Promise<string> => {
+    if (!previewRef.current) throw new Error("プレビューが見つかりません");
+    const { toPng } = await import("html-to-image");
+    return toPng(previewRef.current, { quality: 1, pixelRatio: 2, cacheBust: true });
+  };
+
   const downloadPptx = async () => {
-    if (!kaiho) return;
-    const PptxGenJS = (await import("pptxgenjs")).default;
-    const pptx = new PptxGenJS();
-    pptx.defineLayout({ name: "A4", width: 7.5, height: 10.63 });
-    pptx.layout = "A4";
-    const slide = pptx.addSlide();
-    slide.background = { color: "FBF7EC" };
-
-    slide.addShape(pptx.ShapeType.roundRect, { x: 0.3, y: 0.2, w: 6.9, h: 1.2, fill: { color: "EAF3E1" }, rectRadius: 0.15, line: { color: "C8D4B8", width: 1 } });
-    slide.addShape(pptx.ShapeType.roundRect, { x: 0.45, y: 0.25, w: 1.5, h: 0.25, fill: { color: "7BAE5E" }, rectRadius: 0.12 });
-    slide.addText(kaiho.issueLabel || form.issueDate, { x: 0.5, y: 0.25, w: 1.4, h: 0.25, fontSize: 8, color: "FFFFFF", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
-    slide.addText(kaiho.title, { x: 0.5, y: 0.55, w: 6.5, h: 0.55, fontSize: 24, bold: true, color: "4D7A35", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
-    slide.addText(kaiho.subtitle, { x: 0.5, y: 1.05, w: 6.5, h: 0.25, fontSize: 10, color: "7BAE5E", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
-
-    let y = 1.65;
-    const sec = kaiho.sections;
-
-    slide.addShape(pptx.ShapeType.roundRect, { x: 0.4, y, w: 3.2, h: 0.3, fill: { color: "EAF3E1" }, rectRadius: 0.05 });
-    slide.addText(sec.activityReport.title, { x: 0.55, y, w: 3, h: 0.3, fontSize: 11, bold: true, color: "4D7A35", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
-    let ay = y + 0.36;
-    sec.activityReport.items.forEach((item) => {
-      if (ay > 6.5) return;
-      slide.addText(`${item.date} ${item.headline}`, { x: 0.5, y: ay, w: 3, h: 0.22, fontSize: 9, bold: true, color: "4D7A35", fontFace: "Hiragino Kaku Gothic ProN" });
-      ay += 0.24;
-      const lines = item.body.length > 60 ? 3 : 2;
-      const h = lines * 0.17;
-      slide.addText(item.body, { x: 0.5, y: ay, w: 3, h, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN", valign: "top", lineSpacingMultiple: 1.3 });
-      ay += h + 0.1;
-    });
-
-    slide.addShape(pptx.ShapeType.roundRect, { x: 3.85, y, w: 3.25, h: 0.3, fill: { color: "E8F4FA" }, rectRadius: 0.05 });
-    slide.addText(sec.nextSchedule.title, { x: 4.0, y, w: 3, h: 0.3, fontSize: 11, bold: true, color: "3A7FA8", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
-    let sy = y + 0.36;
-    sec.nextSchedule.items.forEach((item) => {
-      if (sy > 4.5) return;
-      slide.addText(`${item.date}  ${item.event}`, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
-      sy += 0.24;
-    });
-
-    if (sec.notices.items.length > 0) {
-      sy += 0.15;
-      slide.addShape(pptx.ShapeType.roundRect, { x: 3.85, y: sy, w: 3.25, h: 0.3, fill: { color: "FFF3E0" }, rectRadius: 0.05 });
-      slide.addText(sec.notices.title, { x: 4.0, y: sy, w: 3, h: 0.3, fontSize: 11, bold: true, color: "B8862D", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
-      sy += 0.36;
-      sec.notices.items.forEach((item) => {
-        if (sy > 6.5) return;
-        const noticeText = item.headline ? `\u30FB${item.headline}：${item.body}` : `\u30FB${item.body}`;
-        slide.addText(noticeText, { x: 4.0, y: sy, w: 3, h: 0.2, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
-        sy += 0.24;
-      });
+    if (!kaiho || !previewRef.current) return;
+    try {
+      const [dataUrl, PptxGenJS] = await Promise.all([
+        capturePreview(),
+        import("pptxgenjs").then(m => m.default),
+      ]);
+      const pptx = new PptxGenJS();
+      pptx.defineLayout({ name: "A4", width: 7.5, height: 10.63 });
+      pptx.layout = "A4";
+      const slide = pptx.addSlide();
+      slide.addImage({ data: dataUrl, x: 0, y: 0, w: 7.5, h: 10.63 });
+      await pptx.writeFile({ fileName: `${kaiho.title}.pptx` });
+    } catch (err) {
+      setError(`PPTX生成エラー: ${err instanceof Error ? err.message : "不明"}`);
     }
-
-    const vy = Math.max(ay, sy) + 0.15;
-    if (vy < 8.5) {
-      slide.addShape(pptx.ShapeType.roundRect, { x: 0.4, y: vy, w: 6.7, h: 0.3, fill: { color: "FDE8EF" }, rectRadius: 0.05 });
-      slide.addText(sec.memberVoices.title, { x: 0.55, y: vy, w: 6.4, h: 0.3, fontSize: 11, bold: true, color: "C25A7C", fontFace: "Hiragino Kaku Gothic ProN", valign: "middle" });
-      let my = vy + 0.36;
-      sec.memberVoices.items.forEach((v) => {
-        if (my > 9) return;
-        slide.addText(`${v.name}\uFF1A\u300C${v.comment}\u300D`, { x: 0.55, y: my, w: 6.4, h: 0.22, fontSize: 8, color: "3D3D3D", fontFace: "Hiragino Kaku Gothic ProN" });
-        my += 0.26;
-      });
-    }
-
-    slide.addText(sec.editorNote.body, { x: 0.5, y: 9.6, w: 5.5, h: 0.4, fontSize: 7, color: "777777", fontFace: "Hiragino Kaku Gothic ProN", valign: "top", lineSpacingMultiple: 1.3 });
-    slide.addText(`\u7DE8\u96C6: ${sec.editor.name}`, { x: 6.0, y: 9.7, w: 1.2, h: 0.25, fontSize: 8, color: "4D7A35", align: "right", bold: true, fontFace: "Hiragino Kaku Gothic ProN" });
-    slide.addText(`\u767A\u884C: ${kaiho.clubName} / ${kaiho.publishDate}`, { x: 0.5, y: 10.15, w: 6.5, h: 0.2, fontSize: 7, color: "AAAAAA", align: "center", fontFace: "Hiragino Kaku Gothic ProN" });
-
-    await pptx.writeFile({ fileName: `${kaiho.title}.pptx` });
   };
 
   const downloadPdf = async () => {
     if (!previewRef.current) return;
-    const html2canvas = (await import("html2canvas")).default;
-    const { jsPDF } = await import("jspdf");
-    const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: kaiho?.themeColor?.background || "#FBF7EC" });
-    const pdf = new jsPDF("p", "mm", "a4");
-    pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
-    pdf.save(`${kaiho?.title || "会報"}.pdf`);
+    try {
+      const [dataUrl, { jsPDF }] = await Promise.all([
+        capturePreview(),
+        import("jspdf"),
+      ]);
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(dataUrl, "PNG", 0, 0, 210, 297);
+      pdf.save(`${kaiho?.title || "会報"}.pdf`);
+    } catch (err) {
+      setError(`PDF生成エラー: ${err instanceof Error ? err.message : "不明"}`);
+    }
   };
 
   return (
